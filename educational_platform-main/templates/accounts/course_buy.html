@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Купить токены | Multy</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* Существующие стили */
+  
+  :root {
+    --primary-500: #7e31ce;
+    --secondary-500: #2575FC;
+    --transition-speed: 0.3s;
+  }
+
+  /* Добавьте новые стили сразу после :root или где удобно */
+  
+  .logo-text {
+    position: relative;
+    font-weight: 800;
+    color: #6A11CB;
+  }
+
+  .logo-text::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(135deg, #6A11CB 0%, #2575FC 100%);
+    border-radius: 3px;
+    transition: opacity 0.3s ease;
+  }
+
+  .logo-text:hover::after {
+    opacity: 0.8;
+  }
+
+
+  body {
+    font-family: 'Montserrat', sans-serif;
+    transition: background-color var(--transition-speed), color var(--transition-speed);
+  }
+
+  /* Обновленные стили для token-card */
+  .token-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb; /* Добавляем тонкую границу для четкости */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1); /* Более заметная тень */
+    border-radius: 1rem;
+    padding: 1.5rem;
+    transition: all 0.3s ease-in-out;
+    animation: fadeIn 0.5s ease-in-out;
+  }
+  .token-card:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.15); /* Усиленная тень при наведении */
+    transform: translateY(-4px); /* Легкий подъем для эффекта */
+  }
+
+  /* Остальные стили без изменений */
+  .profile-dropdown {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  .profile-dropdown:not(.hidden) {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .buy-button {
+    background: linear-gradient(to right, #7e31ce, #2575FC);
+    transition: background 0.3s ease;
+  }
+  .buy-button:hover {
+    background: linear-gradient(to right, #6a28a8, #1e5bbf);
+  }
+  .toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    display: none;
+    z-index: 100;
+  }
+  table {
+    border-collapse: collapse;
+  }
+  th, td {
+    border-bottom: 1px solid #e5e7eb;
+  }
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .float-animation {
+    animation: float 3s ease-in-out infinite;
+  }
+  @keyframes float {
+    0% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+    100% {
+      transform: translateY(0);
+    }
+  }
+  
+  
+</style>
+</head>
+<body class="min-h-screen bg-gray-50">
+  <div class="background-pattern"></div>
+  <!-- Toast Notification -->
+  <div id="toast" class="toast flex items-center gap-2">
+    <i class="fas fa-check-circle"></i>
+    <span>Покупка успешна!</span>
+  </div>
+  <!-- Dark Mode Toggle -->
+
+  <!-- Navigation -->
+  <nav class="bg-white bg-opacity-90 backdrop-filter backdrop-blur-lg shadow-sm py-4 px-6 sticky top-0 z-10">
+    <div class="container mx-auto flex justify-between items-center">
+      <div class="flex items-center">
+        <a href="/">
+          <h1 class="text-2xl font-bold logo-text">Multy</h1>
+        </a>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="profile-button relative inline-block text-left">
+          <div id="profile-button" class="nav-button flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full hover:bg-gray-200 transition-colors cursor-pointer">
+            <span class="text-sm font-medium">Пользователь</span>
+            <i class="fas fa-chevron-down text-xs"></i>
+          </div>
+          <div id="profile-dropdown" class="profile-dropdown absolute right-0 mt-2 w-48 bg-white shadow-lg rounded z-50 hidden">
+            <a href="{% url 'buy_course' %}" class="block px-4 py-2 hover:bg-gray-100">
+              <i class="fas fa-coins"></i><span> Купить токены</span>
+            </a>
+            <a href="{% url 'personal_page' %}" class="block px-4 py-2 hover:bg-gray-100">
+              <i class="fa-solid fa-circle-user"></i><span>Личный кабинет</span>
+            </a>
+              <a onclick="window.history.back()"  class="block px-4 py-2 hover:bg-gray-100">
+              <i class="fa-solid fa-arrow-left"></i><span>Назад</span>
+            </a>
+            <div class="dropdown-divider border-t my-1"></div>
+            <button onclick="window.location.href = '{% url 'logout' %}'" class="w-full text-left px-4 py-2 hover:bg-gray-100">
+              <i class="fas fa-sign-out-alt"></i><span> Выйти</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+  <!-- Main Content -->
+  <div class="max-w-7xl mx-auto p-6">
+    <header class="text-center mb-10">
+      <h1 class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-500 mb-3">Купить токены</h1>
+      <p class="text-gray-600 mt-3">Выберите подходящий тариф и пополните баланс токенов</p>
+    </header>
+    <!-- Balance Display -->
+    <div class="text-center mb-10">
+      <p class="flex items-center justify-center gap-2 text-lg">
+        <i class="fas fa-coins text-purple-600"></i>
+        <span id="tokenBalance">0</span> токенов <!-- Начальное значение будет обновлено с сервера -->
+      </p>
+    </div>
+    <!-- Token Packages -->
+    <div id="packages" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div class="token-card p-6 rounded-2xl hover:shadow-lg transition-all duration-300">
+        <div class="text-center">
+          <h3 class="text-2xl font-bold mb-4">50 токенов</h3>
+          <div class="text-purple-600 text-3xl font-bold mb-6">100₽</div>
+          <button data-tokens="50" data-price="100" class="buy-button w-full px-4 py-2 rounded-full text-white">
+            Купить
+          </button>
+        </div>
+      </div>
+      <div class="token-card p-6 rounded-2xl hover:shadow-lg transition-all duration-300 relative">
+        <div class="text-center">
+          <h3 class="text-2xl font-bold mb-4">100 токенов</h3>
+          <div class="text-purple-600 text-3xl font-bold mb-6">200₽</div>
+          <button data-tokens="100" data-price="200" class="buy-button w-full px-4 py-2 rounded-full text-white">
+            Купить
+          </button>
+        </div>
+      </div>
+      <div class="token-card p-6 rounded-2xl hover:shadow-lg transition-all duration-300">
+        <div class="text-center">
+          <h3 class="text-2xl font-bold mb-4">250 токенов</h3>
+          <div class="text-purple-600 text-3xl font-bold mb-6">500₽</div>
+          <button data-tokens="250" data-price="500" class="buy-button w-full px-4 py-2 rounded-full text-white">
+            Купить
+          </button>
+        </div>
+      </div>
+      <div class="token-card p-6 rounded-2xl hover:shadow-lg transition-all duration-300">
+        <div class="text-center">
+          <h3 class="text-2xl font-bold mb-4">500 токенов</h3>
+          <div class="text-purple-600 text-3xl font-bold mb-6">1000₽</div>
+          <button data-tokens="500" data-price="1000" class="buy-button w-full px-4 py-2 rounded-full text-white">
+            Купить
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- Purchase History -->
+    <section class="mt-16">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold">История покупок</h2>
+        <button id="clearHistoryButton" class="text-red-500 hover:text-red-700 transition-colors">
+          Очистить историю
+        </button>
+      </div>
+      <table class="w-full bg-white rounded-lg shadow-lg">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="px-6 py-3 text-left text-gray-500">Количество</th>
+            <th class="px-6 py-3 text-left text-gray-500">Дата</th>
+            <th class="px-6 py-3 text-left text-gray-500">Стоимость</th>
+          </tr>
+        </thead>
+        <tbody id="purchaseHistory">
+          <!-- История будет заполнена через JavaScript -->
+        </tbody>
+      </table>
+    </section>
+  </div>
+  <!-- Floating Balance -->
+  <div class="fixed bottom-6 left-6 bg-white p-4 rounded-full shadow-lg flex items-center gap-3">
+    <div class="token-counter float-animation">
+      <i class="fas fa-coins text-yellow-500 text-2xl"></i>
+    </div>
+    <div>
+      <p class="text-xs text-gray-500">Ваши токены</p>
+      <p id="floatingBalance">0</p> <!-- Начальное значение будет обновлено с сервера -->
+    </div>
+  </div>
+  <!-- Scroll To Top -->
+  <button id="scrollToTop" class="fixed bottom-6 right-6 bg-white p-3 rounded-full shadow-lg hidden">
+    <i class="fas fa-arrow-up text-gray-500"></i>
+  </button>
+  <script>
+    // Состояние
+    let tokenBalance = 0; // Начальное значение будет загружено с сервера
+    let purchaseHistory = [];
+    let isLoading = false;
+
+    // Элементы DOM
+    const tokenBalanceDisplay = document.getElementById('tokenBalance');
+    const floatingBalance = document.getElementById('floatingBalance');
+    const purchaseHistoryTable = document.getElementById('purchaseHistory');
+    const toast = document.getElementById('toast');
+    const profileButton = document.getElementById('profile-button');
+    const profileDropdown = document.getElementById('profile-dropdown');
+    const packages = document.querySelectorAll('#packages button');
+    const scrollToTop = document.getElementById('scrollToTop');
+    const clearHistoryButton = document.getElementById('clearHistoryButton');
+
+    // Функция для получения CSRF-токена
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+
+    // Загрузка баланса с сервера
+    async function fetchBalance() {
+      const response = await fetch('/api/get-token-balance/');
+      const data = await response.json();
+      tokenBalance = data.balance;
+      updateBalanceDisplay();
+    }
+
+    // Загрузка истории покупок с сервера
+    async function fetchHistory() {
+      const response = await fetch('/api/get-purchase-history/');
+      const data = await response.json();
+      purchaseHistory = data;
+      updatePurchaseHistory();
+    }
+
+    // Инициализация данных при загрузке страницы
+    async function initialize() {
+      await fetchBalance();
+      await fetchHistory();
+    }
+
+    // Обработка покупки токенов
+    async function handlePurchase(e) {
+      if (isLoading) return;
+      const tokens = parseInt(e.target.dataset.tokens);
+      const price = parseFloat(e.target.dataset.price);
+      if (confirm(`Купить ${tokens} токенов за ${price}₽?`)) {
+        isLoading = true;
+        e.target.disabled = true;
+        showLoading(e.target);
+        try {
+          const response = await fetch('/api/purchase-token/', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ amount: tokens, price: price })
+          });
+          if (response.ok) {
+            const data = await response.json();
+            tokenBalance = data.new_balance; // Обновляем баланс из ответа
+            updateBalanceDisplay();
+            await fetchHistory(); // Обновляем историю
+            showSuccessToast();
+          } else {
+            alert('Ошибка при покупке');
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          alert('Произошла ошибка');
+        } finally {
+          isLoading = false;
+          e.target.disabled = false;
+          e.target.innerHTML = 'Купить';
+        }
+      }
+    }
+
+    // Очистка истории покупок
+    async function clearPurchaseHistory() {
+      if (confirm('Вы уверены, что хотите очистить историю покупок?')) {
+        try {
+          const response = await fetch('/api/clear-history/', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': getCookie('csrftoken')
+            }
+          });
+          if (response.ok) {
+            await fetchHistory(); // Обновляем историю после очистки
+          } else {
+            alert('Ошибка при очистке истории');
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          alert('Произошла ошибка');
+        }
+      }
+    }
+
+    // Обновление отображения баланса
+    function updateBalanceDisplay() {
+      tokenBalanceDisplay.textContent = tokenBalance;
+      floatingBalance.textContent = tokenBalance;
+    }
+
+    // Обновление таблицы истории покупок
+    function updatePurchaseHistory() {
+      purchaseHistoryTable.innerHTML = purchaseHistory.map(item => {
+        const date = new Date(item.date).toLocaleDateString();
+        return `
+          <tr class="hover:bg-gray-50">
+            <td class="px-6 py-4">${item.amount} токенов</td>
+            <td class="px-6 py-4">${date}</td>
+            <td class="px-6 py-4">${item.price}₽</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Показ загрузки
+    function showLoading(button) {
+      button.innerHTML = `
+        <svg class="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75 " fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 0012 20c4.411 0 8-3.589 8-8 0-1.75-.534-3.37-1.447-4.709H6.647z"></path>
+        </svg>
+      `;
+    }
+
+    // Показ уведомления об успехе
+    function showSuccessToast() {
+      toast.style.display = 'flex';
+      setTimeout(() => {
+        toast.style.display = 'none';
+      }, 3000);
+    }
+
+
+
+    // Управление выпадающим меню
+    function toggleDropdown() {
+      profileDropdown.classList.toggle('hidden');
+    }
+
+    function closeDropdown(e) {
+      if (!profileButton.contains(e.target) && !profileDropdown.contains(e.target)) {
+        profileDropdown.classList.add('hidden');
+      }
+    }
+
+    // Управление кнопкой "Наверх"
+    function handleScroll() {
+      if (window.pageYOffset > 300) {
+        scrollToTop.classList.remove('hidden');
+      } else {
+        scrollToTop.classList.add('hidden');
+      }
+    }
+
+    function scrollToTopFunction() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Слушатели событий
+    document.querySelectorAll('.buy-button').forEach(button => {
+      button.addEventListener('click', handlePurchase);
+    });
+    profileButton.addEventListener('click', toggleDropdown);
+    window.addEventListener('click', closeDropdown);
+    window.addEventListener('scroll', handleScroll);
+    scrollToTop.addEventListener('click', scrollToTopFunction);
+    clearHistoryButton.addEventListener('click', clearPurchaseHistory);
+
+    // Инициализация при загрузке страницы
+    document.addEventListener('DOMContentLoaded', initialize);
+  </script>
+</body>
+</html>

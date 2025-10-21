@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Мульти | Регистрация</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/accounts/registration.css' %}">
+  <!-- Адаптивность на мобильных устройствах -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Загрузка стилей (Tailwind + Google Fonts) -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+</head>
+
+<style>
+    
+    :root {
+      --primary-gradient: linear-gradient(135deg, #6A11CB 0%, #2575FC 100%);
+      --secondary-gradient: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+      --success-gradient: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%);
+      --support-gradient: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+    }
+
+    /* Общие правила */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; overflow-x: hidden; }
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      perspective: 1000px;
+      scroll-behavior: smooth;
+    }
+
+    .animated-gradient {
+      background-size: 400% 400%;
+      animation: gradientAnimation 10s ease infinite;
+    }
+    @keyframes gradientAnimation {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .button-3d {
+      transform-style: preserve-3d;
+      transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .button-3d:hover {
+      transform: translate3d(0, -4px, 10px) rotateX(15deg);
+      box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .card-hover-effect {
+      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      overflow: hidden;
+    }
+    .card-hover-effect:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .background-shapes {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+    }
+    .shape {
+      position: absolute;
+      background: rgba(106, 17, 203, 0.1);
+      border-radius: 50%;
+      filter: blur(40px);
+      animation: float 15s infinite ease-in-out;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+
+    .input-field {
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+      background-clip: padding-box;
+      width: 100%;
+    }
+    .input-field:focus {
+      border-color: #6A11CB;
+      box-shadow: 0 0 0 4px rgba(106, 17, 203, 0.1);
+      outline: none;
+    }
+
+    .registration-card {
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      background-color: rgba(255, 255, 255, 0.8);
+      max-width: 600px;
+      width: 90%;
+      margin: 20px auto;
+      padding: 15px;
+      border-radius: 15px;
+      overflow-y: auto;
+      max-height: 80vh;
+    }
+
+    .support-button {
+      position: fixed;
+      right: 30px;
+      bottom: 30px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: var(--support-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 16px rgba(245, 124, 0, 0.4);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+    .support-button:hover { transform: scale(1.1); }
+
+    .support-chat {
+      position: fixed;
+      right: 30px;
+      bottom: 100px;
+      width: 350px;
+      max-width: 90vw;
+      height: 450px;
+      max-height: 70vh;
+      background-color: white;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      z-index: 999;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      opacity: 0;
+      transform: translateY(20px) scale(0.9);
+      pointer-events: none;
+    }
+    .support-chat.active {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: all;
+    }
+
+    .chat-header {
+      background: var(--support-gradient);
+      padding: 15px 20px;
+      color: white;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .chat-messages {
+      padding: 20px;
+      height: calc(100% - 120px);
+      overflow-y: auto;
+    }
+    .chat-input {
+      display: flex;
+      padding: 10px 20px;
+      border-top: 1px solid #eee;
+    }
+    .message {
+      margin-bottom: 15px;
+      max-width: 80%;
+      padding: 12px 15px;
+      border-radius: 18px;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+    .message.received {
+      background-color: #f1f1f1;
+      border-bottom-left-radius: 5px;
+      align-self: flex-start;
+    }
+    .message.sent {
+      background: var(--secondary-gradient);
+      color: white;
+      border-bottom-right-radius: 5px;
+      align-self: flex-end;
+      margin-left: auto;
+    }
+    .close-button {
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+      font-size: 20px;
+    }
+    .pulse-animation { animation: pulse 2s infinite; }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(245, 124, 0, 0.6); }
+      70% { box-shadow: 0 0 0 15px rgba(245, 124, 0, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(245, 124, 0, 0); }
+    }
+
+    .logo-wrapper {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      margin-bottom: 30px;
+    }
+    .logo-container {
+      display: inline-block;
+      padding: 12px 40px;
+      background-color: rgba(255, 255, 255, 0.8);
+      border-radius: 16px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      max-width: 90%;
+    }
+    .logo-text {
+      font-size: calc(2rem + 1vw);
+      font-weight: 800;
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline-block;
+      line-height: 1.2;
+      margin: 0;
+      padding: 0 5px;
+    }
+    .password-strength {
+      height: 5px;
+      border-radius: 3px;
+      margin-top: 5px;
+      transition: all 0.3s ease;
+      width: 100%;
+    }
+    .password-match {
+      display: flex;
+      align-items: center;
+      font-size: 0.85rem;
+      margin-top: 5px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .password-match.visible { opacity: 1; }
+    .password-match svg { margin-right: 5px; }
+
+    /* Адаптивные настройки */
+    @media (max-width: 768px) {
+      .registration-card { padding: 15px; max-height: 85vh; }
+      .logo-container { padding: 10px 20px; }
+      .logo-text { font-size: calc(1.5rem + 1vw); }
+    }
+    @media (max-width: 480px) {
+      .registration-card { padding: 10px; max-width: 95%; }
+      .support-button { width: 50px; height: 50px; right: 15px; bottom: 15px; }
+      .support-chat { right: 15px; bottom: 75px; max-width: calc(100vw - 30px); }
+    }
+
+    </style>
+<body class="relative overflow-hidden">
+  <!-- Фоновые фигуры -->
+  <div class="background-shapes">
+    <div class="shape" style="width: 300px; height: 300px; top: -100px; left: -100px;"></div>
+    <div class="shape" style="width: 200px; height: 200px; bottom: -50px; right: -50px;"></div>
+    <div class="shape" style="width: 150px; height: 150px; top: 40%; left: 60%;"></div>
+  </div>
+
+  <button
+  onclick="window.location.href = '{% url 'page' %}'"
+  class="fixed top-6 left-7 px-4 py-2 bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-xl shadow-md hover:from-purple-600 hover:to-indigo-700 transition-all duration-300 ease-in-out text-sm sm:text-base font-semibold z-50">
+   Назад
+</button>
+
+  <!-- Заголовок страницы -->
+  <h1 class="text-4xl font-extrabold text-center mt-8 mb-4 text-gray-800">
+    Регистрация
+  </h1>
+
+  <div class="max-w-2xl mx-auto">
+    <div class="registration-card rounded-3xl shadow-xl p-8 md:p-10 card-hover-effect">
+      <!-- Логотип -->
+      <div class="logo-wrapper">
+        <div class="logo-container">
+          <span class="logo-text">MULTY</span>
+        </div>
+      </div>
+
+      <form id="registrationForm" method="post" action="{% url 'register' %}">
+
+        <!-- Добавьте сразу после открытия формы -->
+{% if form.errors %}
+<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+    <strong>Ошибка:</strong>
+    <ul>
+    {% for field in form %}
+        {% for error in field.errors %}
+            <li>{{ field.label }}: {{ error }}</li>
+        {% endfor %}
+    {% endfor %}
+    {% for error in form.non_field_errors %}
+        <li>{{ error }}</li>
+    {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+{% if messages %}
+<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+    {% for message in messages %}
+        <p{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</p>
+    {% endfor %}
+</div>
+{% endif %}
+
+
+        {% csrf_token %}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Имя пользователя -->
+          <div>
+            <label for="username" class="block text-gray-700 font-medium mb-2">Имя</label>
+            <input type="text" name="username" id="username"
+              class="input-field w-full px-4 py-3 rounded-xl bg-white bg-opacity-70 text-gray-800 placeholder-gray-500"
+              placeholder="Введите ваше имя" required>
+          </div>
+
+          <!-- Год рождения -->
+          <div>
+            <label for="year" class="block text-gray-700 font-medium mb-2">Год рождения</label>
+            <select name="year" id="year"
+              class="input-field w-full px-4 py-3 rounded-xl bg-white bg-opacity-70 text-gray-800"
+              required>
+              <option value="" disabled selected>Выберите год</option>
+            </select>
+          </div>
+
+          <!-- Email -->
+          <div>
+            <label for="email" class="block text-gray-700 font-medium mb-2">Email</label>
+            <input type="email" name="email" id="email"
+              class="input-field w-full px-4 py-3 rounded-xl bg-white bg-opacity-70 text-gray-800 placeholder-gray-500"
+              placeholder="example@mail.ru" required>
+          </div>
+
+          <!-- Телефон -->
+          <div>
+            <label for="phone" class="block text-gray-700 font-medium mb-2">Номер телефона</label>
+            <input type="tel" name="phone" id="phone"
+              class="input-field w-full px-4 py-3 rounded-xl bg-white bg-opacity-70 text-gray-800 placeholder-gray-500"
+              placeholder="+7 (___) ___-__-__" required>
+          </div>
+
+          <!-- Пароль -->
+          <div>
+            <label for="password1" class="block text-gray-700 font-medium mb-2">Придумайте пароль</label>
+            <input type="password" name="password1" id="password1"
+              class="input-field w-full px-4 py-3 rounded-xl bg-white bg-opacity-70 text-gray-800 placeholder-gray-500"
+              placeholder="Минимум 8 символов" required>
+            <div class="password-strength bg-gray-200 w-full"></div>
+          </div>
+
+          <!-- Повтор пароля -->
+          <div>
+            <label for="password2" class="block text-gray-700 font-medium mb-2">Повторите пароль</label>
+            <input type="password" name="password2" id="password2"
+              class="input-field w-full px-4 py-3 rounded-xl bg-white bg-opacity-70 text-gray-800 placeholder-gray-500"
+              placeholder="Повторите пароль" required>
+            <div class="password-match" id="passwordMatch">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M5 13l4 4L19 7"></path>
+              </svg>
+              <span class="text-green-500">Пароли совпадают</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Соглашение -->
+        <div class="mt-6">
+          <label class="flex items-center">
+            <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-600" required>
+            <span class="ml-2 text-gray-700">
+              Я согласен с <a href="#" class="text-blue-600 hover:text-blue-800">условиями использования</a> и
+              <a href="#" class="text-blue-600 hover:text-blue-800">политикой конфиденциальности</a>
+            </span>
+          </label>
+        </div>
+
+        <!-- Кнопка отправки -->
+        <div class="mt-8">
+          <button type="submit"
+            class="button-3d w-full py-4 bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl text-white text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200">
+            Зарегистрироваться
+          </button>
+        </div>
+      </form>
+
+      <!-- Ссылка на вход -->
+      <div class="mt-8 text-center">
+        <p class="text-gray-600">Уже есть аккаунт?</p>
+        <a href="{% url 'login' %}" class="text-blue-600 hover:text-blue-800 font-medium">Войти</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Кнопка поддержки -->
+  <div class="support-button pulse-animation" id="supportButton">
+    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+        d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
+    </svg>
+  </div>
+
+  <!-- Чат поддержки -->
+  <div class="support-chat" id="supportChat">
+    <div class="chat-header">
+      <span>Поддержка Учи.ру</span>
+      <button class="close-button" id="closeChat">&times;</button>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+      <div class="message received">
+        Здравствуйте! Чем я могу вам помочь при регистрации?
+      </div>
+    </div>
+    <div class="chat-input">
+      <input type="text" placeholder="Напишите сообщение..."
+        class="w-full px-4 py-2 rounded-full bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        id="messageInput">
+      <button class="ml-2 p-2 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full text-white"
+        id="sendMessage">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      // Заполнение выпадающего списка годов рождения
+      const yearSelect = document.getElementById('year');
+      const currentYear = new Date().getFullYear();
+      const startYear = currentYear - 100;
+      for (let y = currentYear; y >= startYear; y--) {
+        const option = document.createElement('option');
+        option.value = y;
+        option.textContent = y;
+        yearSelect.appendChild(option);
+      }
+
+      // Маска для телефона
+      const phoneInput = document.getElementById('phone');
+      phoneInput.addEventListener('input', (e) => {
+        let x = e.target.value.replace(/\D/g, '').match(/(\d{0,1})(\d{0,3})(\d{0,3})(\d{0,2})(\d{0,2})/);
+        e.target.value = !x[2] ? x[1] :
+          '+' + x[1] + ' (' + x[2] + ') ' +
+          (x[3] ? x[3] + '-' + x[4] : (x[3] ? x[3] : '')) +
+          (x[5] ? '-' + x[5] : '');
+      });
+
+      // Индикатор силы пароля
+      const passwordInput = document.getElementById('password1');
+      const passwordStrength = document.querySelector('.password-strength');
+      passwordInput.addEventListener('input', function() {
+        const password = this.value;
+        let strength = 0;
+        if (password.length >= 8) strength += 25;
+        if (password.match(/[A-Z]/)) strength += 25;
+        if (password.match(/[0-9]/)) strength += 25;
+        if (password.match(/[^A-Za-z0-9]/)) strength += 25;
+        passwordStrength.style.width = strength + '%';
+        if (strength <= 25) {
+          passwordStrength.style.backgroundColor = '#f56565';
+        } else if (strength <= 50) {
+          passwordStrength.style.backgroundColor = '#ed8936';
+        } else if (strength <= 75) {
+          passwordStrength.style.backgroundColor = '#ecc94b';
+        } else {
+          passwordStrength.style.backgroundColor = '#48bb78';
+        }
+      });
+
+      // Проверка совпадения паролей
+      const confirmPasswordInput = document.getElementById('password2');
+      const passwordMatch = document.getElementById('passwordMatch');
+      confirmPasswordInput.addEventListener('input', function() {
+        if (this.value && this.value === passwordInput.value) {
+          passwordMatch.classList.add('visible');
+          passwordMatch.querySelector('span').textContent = 'Пароли совпадают';
+          passwordMatch.querySelector('span').className = 'text-green-500';
+          passwordMatch.querySelector('svg').className = 'w-4 h-4 text-green-500';
+          passwordMatch.querySelector('svg').innerHTML =
+            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>';
+        } else if (this.value) {
+          passwordMatch.classList.add('visible');
+          passwordMatch.querySelector('span').textContent = 'Пароли не совпадают';
+          passwordMatch.querySelector('span').className = 'text-red-500';
+          passwordMatch.querySelector('svg').className = 'w-4 h-4 text-red-500';
+          passwordMatch.querySelector('svg').innerHTML =
+            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>';
+        } else {
+          passwordMatch.classList.remove('visible');
+        }
+      });
+
+      // Валидация формы перед отправкой
+      const form = document.getElementById('registrationForm');
+      form.addEventListener('submit', function(e) {
+        if (passwordInput.value !== confirmPasswordInput.value) {
+          e.preventDefault();
+          alert('Пароли не совпадают');
+        }
+      });
+
+      // Логика чата поддержки
+      const supportButton = document.getElementById('supportButton');
+      const supportChat = document.getElementById('supportChat');
+      const closeChat = document.getElementById('closeChat');
+      const chatMessages = document.getElementById('chatMessages');
+      const messageInput = document.getElementById('messageInput');
+      const sendMessage = document.getElementById('sendMessage');
+
+      supportButton.addEventListener('click', () => {
+        supportChat.classList.add('active');
+        supportButton.classList.remove('pulse-animation');
+      });
+      closeChat.addEventListener('click', () => {
+        supportChat.classList.remove('active');
+      });
+      const sendUserMessage = () => {
+        const message = messageInput.value.trim();
+        if (message) {
+          const userMessage = document.createElement('div');
+          userMessage.classList.add('message', 'sent');
+          userMessage.textContent = message;
+          chatMessages.appendChild(userMessage);
+          messageInput.value = '';
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+          setTimeout(() => {
+            const botMessage = document.createElement('div');
+            botMessage.classList.add('message', 'received');
+            botMessage.textContent = "Спасибо за ваше сообщение! Наш специалист скоро свяжется с вами.";
+            chatMessages.appendChild(botMessage);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+          }, 1000);
+        }
+      };
+      sendMessage.addEventListener('click', sendUserMessage);
+      messageInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          sendUserMessage();
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Онлайн-школа{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --clr-primary: #6C63FF;
+            --clr-secondary: #A162F7;
+            --clr-accent: #C0FF33;
+            --clr-bg: #F9F9FB;
+            --clr-gray: #6B7280;
+            --clr-dark: #111827;
+            --clr-light: #FFFFFF;
+        }
+        
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--clr-bg);
+            color: var(--clr-dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: var(--clr-primary);
+            color: var(--clr-light);
+        }
+
+        .btn-secondary {
+            background: var(--clr-light);
+            color: var(--clr-primary);
+            border: 1px solid currentColor;
+        }
+
+        .btn-add {
+            background: #e8f5e9;
+            color: #4CAF50;
+            border: 1px dashed currentColor;
+        }
+
+        .btn-danger {
+            background: #ffebee;
+            color: #f44336;
+            border: 1px dashed currentColor;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .error-message {
+            color: #f44336;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .heading-gradient {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            background: linear-gradient(135deg, var(--clr-primary), var(--clr-secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .subheading {
+            text-align: center;
+            color: var(--clr-gray);
+            margin-bottom: 2rem;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <header id="site-header">
+        <div class="container">
+            <a href="/" class="logo">
+                <i class="ri-graduation-cap-fill"></i>
+                Multy.ru
+            </a>
+            <nav class="auth-nav">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'logout' %}" class="login-btn">Выйти</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="login-btn">Войти</a>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Multy.ru. Все права защищены.</p>
+        </div>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html> 

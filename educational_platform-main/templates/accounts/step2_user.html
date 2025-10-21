@@ -1,0 +1,910 @@
+{% load static %}
+{% load custom_filters %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="{{ course.description|truncatewords:30 }}">
+  <meta name="keywords" content="{{ course.get_subject_display }}, {{ course.tag_list|join:', ' }}, онлайн-курсы, обучение">
+  <meta property="og:title" content="{{ course.title }} — Multy.ru">
+  <meta property="og:description" content="{{ course.description|truncatewords:30 }}">
+  <meta property="og:image" content="{% static 'images/course-preview.jpg' %}">
+  <title>{{ course.title }} — Детали курса | Multy</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+  {% csrf_token %}
+  <style>
+    :root {
+      --primary-gradient: linear-gradient(135deg, #6A11CB 0%, #2575FC 100%);
+      --hover-gradient: linear-gradient(135deg, #2575FC 0%, #6A11CB 100%);
+      --card-bg: rgba(255, 255, 255, 0.95);
+      --text-color: #2D3748;
+      --text-secondary: #718096;
+      --accent-color: #6A11CB;
+      --border-color: rgba(0, 0, 0, 0.06);
+      --shadow-color: rgba(0, 0, 0, 0.08);
+      --shadow-hover: rgba(0, 0, 0, 0.15);
+      --success-color: #4CAF50;
+      --error-color: #dc3545;
+    }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      min-height: 100vh;
+      perspective: 1000px;
+      margin: 0;
+      padding: 0;
+      color: var(--text-color);
+    }
+
+    .background-pattern {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: radial-gradient(circle, rgba(106, 17, 203, 0.05) 2px, transparent 2px);
+      background-size: 50px 50px;
+      z-index: -1;
+      opacity: 0.8;
+      animation: patternFloat 60s infinite linear;
+    }
+
+    @keyframes patternFloat {
+      0% { background-position: 0 0; }
+      100% { background-position: 100px 100px; }
+    }
+
+    .header {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 16px 24px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      position: sticky;
+      top: 0;
+      z-index: 90;
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .header-logo {
+      font-weight: 800;
+      font-size: 22px;
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      letter-spacing: -0.5px;
+      transition: transform 0.3s ease;
+    }
+
+    .header-logo:hover {
+      transform: scale(1.05);
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .course-container {
+      background: var(--card-bg);
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 8px 24px var(--shadow-color);
+      backdrop-filter: blur(8px);
+      transition: all 0.3s ease;
+      padding: 2rem;
+    }
+
+    .heading-gradient {
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-weight: 700;
+      font-size: 2rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.35rem 0.75rem;
+      border-radius: 50px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-right: 0.5rem;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, rgba(33, 150, 243, 0.1) 0%, rgba(33, 150, 243, 0.02) 100%);
+      color: #1976D2;
+      border: 1px solid rgba(25, 118, 210, 0.2);
+    }
+
+    .badge.subject {
+      background: var(--primary-gradient);
+      color: white;
+      border: none;
+    }
+
+    .topic-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 12px var(--shadow-color);
+      border: 1px solid var(--border-color);
+      transition: all 0.3s ease;
+    }
+
+    .topic-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px var(--shadow-hover);
+    }
+
+    .topic-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-color);
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid rgba(106, 17, 203, 0.2);
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .lesson-item {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.3s ease;
+      border: 1px solid var(--border-color);
+    }
+
+    .lesson-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px var(--shadow-hover);
+    }
+
+    .lesson-number {
+      font-weight: 600;
+      color: #2575FC;
+      font-size: 0.9rem;
+    }
+
+    .lesson-title {
+      font-weight: 600;
+      margin-top: 0.25rem;
+    }
+
+    .token-price {
+      display: flex;
+      align-items: center;
+      color: var(--text-color);
+      font-weight: 600;
+      font-size: 0.9rem;
+      padding: 0.5rem 1rem;
+      background: rgba(255, 187, 0, 0.2);
+      border-radius: 8px;
+      margin-top: 0.5rem;
+      width: fit-content;
+    }
+
+    .token-price i {
+      color: #FFBB00;
+      margin-right: 0.25rem;
+    }
+
+    .btn-purchase, .btn-start-learning {
+      background: var(--primary-gradient);
+      color: white;
+      font-weight: 600;
+      padding: 0.75rem 1.5rem;
+      border-radius: 1.5rem;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 4px 12px var(--shadow-hover);
+    }
+
+    .btn-purchase:hover, .btn-start-learning:hover {
+      background: var(--hover-gradient);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px var(--shadow-hover);
+      animation: pulse 0.5s infinite;
+    }
+
+    .btn-purchase:hover i, .btn-start-learning:hover i {
+      animation: bounce 0.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
+    }
+
+    .author-info {
+      display: flex;
+      align-items: center;
+      margin-top: 1rem;
+    }
+
+    .author-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(106, 17, 203, 0.1) 0%, rgba(106, 17, 203, 0.02) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 0.75rem;
+      color: var(--accent-color);
+    }
+
+    .author-name {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    .author-email {
+      font-weight: 600;
+      color: var(--text-color);
+    }
+
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 0;
+      color: var(--text-secondary);
+    }
+
+    .empty-state i {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+
+    .empty-state-text {
+      font-size: 1.1rem;
+      text-align: center;
+      max-width: 300px;
+      line-height: 1.5;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+    }
+
+    .modal.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      transform: translateY(20px);
+      opacity: 0;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .modal.active .modal-content {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .modal-title {
+      font-weight: 700;
+      font-size: 1.5rem;
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .modal-close {
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--text-secondary);
+      transition: all 0.2s ease;
+      background: #f3f4f6;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-close:hover {
+      color: var(--text-color);
+      transform: rotate(90deg);
+      background: #e5e7eb;
+    }
+
+    .modal-body {
+      margin-bottom: 1.5rem;
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+    }
+
+    .btn-cancel {
+      background: #f3f4f6;
+      color: var(--text-color);
+      padding: 0.5rem 1.25rem;
+      border-radius: 50px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-cancel:hover {
+      background: #e5e7eb;
+    }
+
+    .btn-confirm {
+      background: var(--primary-gradient);
+      color: white;
+      padding: 0.5rem 1.25rem;
+      border-radius: 50px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 10px rgba(106, 17, 203, 0.2);
+    }
+
+    .btn-confirm:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(106, 17, 203, 0.3);
+    }
+
+    .btn-confirm:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .price-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid #f3f4f6;
+    }
+
+    .price-row:last-child {
+      border-bottom: none;
+      font-weight: 700;
+    }
+
+    .insufficient-funds {
+      color: #e53e3e;
+      margin-top: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 600;
+      display: none;
+    }
+
+    .progress-container {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 12px var(--shadow-color);
+    }
+
+    .progress-bar {
+      height: 8px;
+      background: rgba(106, 17, 203, 0.1);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--primary-gradient);
+      transition: width 0.5s ease;
+    }
+
+    .progress-text {
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+    }
+
+    .progress-value {
+      font-weight: 600;
+      color: var(--accent-color);
+    }
+
+    [data-tooltip] {
+      position: relative;
+    }
+
+    [data-tooltip]:hover:after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--text-color);
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      white-space: nowrap;
+      z-index: 100;
+      opacity: 0;
+      animation: fadeInTooltip 0.2s ease forwards;
+    }
+
+    @keyframes fadeInTooltip {
+      to { opacity: 1; }
+    }
+
+    .toggle-topic-btn i {
+      transition: transform 0.3s ease;
+    }
+
+    .toggle-topic-btn.toggled i {
+      transform: rotate(180deg);
+    }
+
+    .topic-content {
+      max-height: 1000px;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+
+    .topic-content.collapsed {
+      max-height: 0;
+    }
+
+    .animate-fade-in {
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 1024px) {
+      .container { padding: 16px; }
+      .course-container { padding: 1.5rem; }
+      .heading-gradient { font-size: 1.75rem; }
+    }
+
+    @media (max-width: 768px) {
+      .lesson-item { flex-direction: column; align-items: flex-start; }
+      .btn-purchase, .btn-start-learning { width: 100%; justify-content: center; }
+      .flex-wrap { gap: 0.5rem; }
+    }
+
+    @media (max-width: 640px) {
+      .modal-content { width: 95%; margin: 5% auto; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Фоновый узор -->
+  <div class="background-pattern"></div>
+
+  <!-- Хедер -->
+  <header class="header py-4 bg-white shadow-sm">
+    <div class="container mx-auto flex justify-between items-center">
+      <div class="header-logo text-xl font-bold">Multy</div>
+
+      <div class="flex items-center space-x-4">
+        {% if user.is_authenticated %}
+          <div class="flex items-center space-x-2">
+            <span class="hidden md:inline text-sm">Баланс: <b>{{ user.tokens.balance }} токенов</b></span>
+            <div class="relative">
+              <button class="flex items-center space-x-1 bg-gray-100 rounded-full py-1 px-3 hover:bg-gray-200 transition-colors">
+                <i class="fas fa-user-circle" aria-label="Профиль пользователя"></i>
+                <span class="hidden md:inline">{{ user.email }}</span>
+                <i class="fas fa-chevron-down text-xs"></i>
+              </button>
+            </div>
+            <a href="{% url 'logout' %}" class="text-blue-600 hover:text-blue-800 font-medium">Выйти</a>
+          </div>
+        {% else %}
+          <a href="{% url 'login' %}" class="text-blue-600 hover:text-blue-800 font-medium">Войти</a>
+          <a href="{% url 'register' %}" class="bg-blue-600 text-white py-2 px-4 rounded-full hover:bg-blue-700 transition-colors">Регистрация</a>
+        {% endif %}
+      </div>
+    </div>
+  </header>
+
+  <!-- Основной контент -->
+  <div class="container mx-auto my-8 px-4">
+    <!-- Хлебные крошки -->
+    <div class="flex items-center space-x-2 mb-6 text-sm flex-wrap">
+      <a href="{% url 'page' %}" class="text-gray-500 hover:text-blue-600">Главная</a>
+      <i class="fas fa-chevron-right text-gray-400 text-xs"></i>
+      <a href="{% url 'course_list_superuser' %}" class="text-gray-500 hover:text-blue-600">Курсы</a>
+      <i class="fas fa-chevron-right text-gray-400 text-xs"></i>
+      <span class="text-gray-700">{{ course.title }}</span>
+    </div>
+
+    <!-- Прогресс курса -->
+    {% with total_lessons=0 completed_lessons=0 %}
+      {% for topic in topics %}
+        {% for lesson in topic.lessons.all %}
+          {% with total_lessons=total_lessons|add:1 %}
+            {% if lesson.id|stringformat:"s" in purchased_lessons %}
+              {% with completed_lessons=completed_lessons|add:1 %}
+              {% endwith %}
+            {% endif %}
+          {% endwith %}
+        {% endfor %}
+      {% endfor %}
+      {% if total_lessons > 0 %}
+        <div class="progress-container mb-8">
+          <h3 class="text-lg font-semibold mb-4">Прогресс курса</h3>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: {{ completed_lessons|floatformat:2|div:total_lessons|mul:100 }}%"></div>
+          </div>
+          <div class="progress-text">
+            Завершено <span class="progress-value">{{ completed_lessons }}</span> из {{ total_lessons }} уроков ({{ completed_lessons|floatformat:2|div:total_lessons|mul:100|floatformat:0 }}%)
+          </div>
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <!-- Информация о курсе -->
+    <div class="flex flex-wrap mb-8">
+      <div class="w-full lg:w-2/3 pr-0 lg:pr-8">
+        <div class="flex flex-wrap mb-4 space-x-2">
+          <span class="badge subject">Предмет: {{ course.get_subject_display }}</span>
+          {% for tag in course.tag_list %}
+            {% if tag %}
+              <span class="badge">{{ tag }}</span>
+            {% endif %}
+          {% endfor %}
+        </div>
+
+        <h1 class="heading-gradient text-3xl font-bold mb-4">{{ course.title }}</h1>
+        <div class="course-description text-gray-700 mb-6">{{ course.description|linebreaks }}</div>
+
+        <div class="author-info">
+          <div class="author-avatar">
+            <i class="fas fa-user" aria-label="Аватар автора"></i>
+          </div>
+          <div>
+            <div class="author-name">Автор: {{ course.editor.get_full_name|default:course.editor.username }}</div>
+            <div class="author-email">{{ course.editor.email }}</div>
+          </div>
+        </div>
+
+        {% with first_lesson=topics.first.lessons.first %}
+          {% if first_lesson %}
+            {% if first_lesson.id|stringformat:"s" in purchased_lessons %}
+              <a href="{% url 'step3_user' first_lesson.id %}" class="btn-start-learning">
+                <i class="fas fa-play-circle" aria-label="Начать урок"></i> Начать обучение
+              </a>
+            {% else %}
+              <button class="btn-start-learning buy-lesson"
+                      data-lesson-id="{{ first_lesson.id }}"
+                      data-lesson-title="{{ first_lesson.title }}"
+                      data-lesson-price="{{ first_lesson.price_in_tokens }}"
+                      data-purchase-url="{% url 'purchase_lesson' first_lesson.id %}">
+                <i class="fas fa-shopping-cart" aria-label="Купить урок"></i> Купить первый урок ({{ first_lesson.price_in_tokens }} токенов)
+              </button>
+            {% endif %}
+          {% endif %}
+        {% endwith %}
+      </div>
+
+      <div class="w-full lg:w-1/3 mt-8 lg:mt-0">
+        <div class="course-container p-6">
+          <div class="text-xl font-bold mb-4">Информация о курсе</div>
+          <div class="flex items-center mb-4">
+            <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+              <i class="fas fa-layer-group" aria-label="Количество тем"></i>
+            </div>
+            <div>
+              <div class="text-sm text-gray-500">Количество тем</div>
+              <div class="font-semibold">{{ topics|length }}</div>
+            </div>
+          </div>
+          <div class="flex items-center mb-4">
+            <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center mr-3">
+              <i class="fas fa-book" aria-label="Количество уроков"></i>
+            </div>
+            <div>
+              <div class="text-sm text-gray-500">Всего уроков</div>
+              <div class="font-semibold">{{ total_lessons }}</div>
+            </div>
+          </div>
+          <div class="flex items-center">
+            <div class="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center mr-3">
+              <i class="fas fa-coins" aria-label="Баланс токенов"></i>
+            </div>
+            <div>
+              <div class="text-sm text-gray-500">Ваш баланс</div>
+              <div class="font-semibold">{{ user.tokens.balance|default:"0" }} токенов</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Темы и уроки курса -->
+ <!-- Темы и уроки курса -->
+<div id="course-topics" class="mb-8">
+  <h2 class="heading-gradient text-2xl font-bold mb-6">Содержание курса</h2>
+  {% if topics %}
+    {% for topic in topics %}
+      <div class="topic-card" data-topic-id="{{ topic.id }}">
+        <div class="flex justify-between items-center mb-3">
+          <h3 class="topic-title text-xl font-medium">Тема {{ forloop.counter }}: {{ topic.title }}</h3>
+          <button class="toggle-topic-btn text-gray-500 hover:text-purple-600" aria-label="Свернуть/развернуть тему">
+            <i class="fas fa-chevron-down"></i>
+          </button>
+        </div>
+        <div class="topic-content">
+          {% if topic.lessons.all %}
+            <div class="space-y-4">
+              {% for lesson in topic.lessons.all %}
+                <div class="lesson-item flex justify-between items-center p-3 animate-fade-in">
+                  <div class="lesson-info">
+                    <div class="lesson-number">Урок {{ forloop.counter }}</div>
+                    <div class="lesson-title">{{ lesson.title }}</div>
+                    <div class="token-price" data-tooltip="Стоимость урока">
+                      <i class="fas fa-coins"></i> {{ lesson.price_in_tokens }} токенов
+                    </div>
+                  </div>
+
+                  <!-- Проверка: пользователь купил урок ИЛИ он является редактором курса -->
+                  {% if lesson.id|stringformat:"s" in purchased_lessons or request.user == course.editor %}
+                    <a href="{% url 'step3_user' lesson.id %}" class="btn-purchase bg-green-500 hover:bg-green-600">
+                      <i class="fas fa-play-circle" aria-label="Начать урок"></i> Начать
+                    </a>
+                  {% else %}
+                    <button class="btn-purchase buy-lesson bg-gradient-to-r from-purple-600 to-blue-600 hover:from-blue-600 hover:to-purple-600"
+                            data-lesson-id="{{ lesson.id }}"
+                            data-lesson-title="{{ lesson.title }}"
+                            data-lesson-price="{{ lesson.price_in_tokens }}"
+                            data-purchase-url="{% url 'purchase_lesson' lesson.id %}">
+                      <i class="fas fa-shopping-cart" aria-label="Купить урок"></i> Купить
+                    </button>
+                  {% endif %}
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="empty-state">
+              <i class="fas fa-book-open"></i>
+              <div class="empty-state-text">У этой темы пока нет уроков.</div>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <div class="empty-state">
+      <i class="fas fa-graduation-cap"></i>
+      <div class="empty-state-text">Темы курса не добавлены.</div>
+    </div>
+  {% endif %}
+</div>
+
+  <!-- Футер -->
+  <footer class="bg-white bg-opacity-90 py-8 border-t border-gray-200">
+    <div class="container mx-auto px-4">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-4 md:mb-0">
+          <div class="header-logo text-xl font-bold mb-2">Multy</div>
+          <p class="text-gray-600 text-sm">© 2025 Multy Все права защищены.</p>
+        </div>
+
+      </div>
+    </div>
+  </footer>
+
+  <!-- Модальное окно для покупки урока -->
+  <div class="modal" id="purchaseModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Покупка урока</h3>
+        <span class="modal-close" aria-label="Закрыть модальное окно">×</span>
+      </div>
+      <div class="modal-body">
+        <p class="mb-4">Вы собираетесь приобрести урок <strong id="lessonTitle"></strong></p>
+        <div class="bg-gray-50 rounded-lg p-4">
+          <div class="price-row">
+            <span>Стоимость урока:</span>
+            <span id="lessonPrice"></span> токенов
+          </div>
+          <div class="price-row">
+            <span>Ваш текущий баланс:</span>
+            <span id="currentBalance">{{ user.tokens.balance|default:"0" }}</span> токенов
+          </div>
+          <div class="price-row">
+            <span>Останется после покупки:</span>
+            <span id="balanceAfter"></span> токенов
+          </div>
+        </div>
+        <div class="insufficient-funds" id="insufficientFunds">
+          <i class="fas fa-exclamation-circle"></i> Недостаточно токенов для покупки
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" id="cancelPurchase">Отмена</button>
+        <button class="btn-confirm" id="confirmPurchase" disabled>
+          <span class="btn-text">Подтвердить покупку</span>
+          <span class="btn-loading hidden"><i class="fas fa-spinner fa-spin"></i> Загрузка...</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function getCsrfToken() {
+      const name = 'csrftoken';
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const modal = document.getElementById('purchaseModal');
+      const modalTitle = document.getElementById('lessonTitle');
+      const modalPrice = document.getElementById('lessonPrice');
+      const modalBalance = document.getElementById('currentBalance');
+      const modalBalanceAfter = document.getElementById('balanceAfter');
+      const insufficientFunds = document.getElementById('insufficientFunds');
+      const confirmBtn = document.getElementById('confirmPurchase');
+      const cancelBtn = document.getElementById('cancelPurchase');
+      const closeBtn = document.querySelector('.modal-close');
+      let purchaseUrl = '';
+
+      // Открытие модального окна
+      document.querySelectorAll('.buy-lesson').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const lessonId = btn.dataset.lessonId;
+          modalTitle.textContent = btn.dataset.lessonTitle;
+          modalPrice.textContent = btn.dataset.lessonPrice;
+          const price = parseInt(btn.dataset.lessonPrice);
+          const balance = parseInt(modalBalance.textContent);
+          modalBalanceAfter.textContent = balance - price;
+          purchaseUrl = btn.dataset.purchaseUrl;
+
+          if (balance >= price) {
+            confirmBtn.disabled = false;
+            insufficientFunds.style.display = 'none';
+          } else {
+            confirmBtn.disabled = true;
+            insufficientFunds.style.display = 'flex';
+          }
+
+          modal.classList.add('active');
+        });
+      });
+
+      // Закрытие модального окна
+      const closeModal = () => {
+        modal.classList.remove('active');
+        confirmBtn.disabled = true;
+        confirmBtn.querySelector('.btn-text').classList.remove('hidden');
+        confirmBtn.querySelector('.btn-loading').classList.add('hidden');
+      };
+
+      closeBtn.addEventListener('click', closeModal);
+      cancelBtn.addEventListener('click', closeModal);
+
+      // Подтверждение покупки
+      confirmBtn.addEventListener('click', async () => {
+        confirmBtn.disabled = true;
+        confirmBtn.querySelector('.btn-text').classList.add('hidden');
+        confirmBtn.querySelector('.btn-loading').classList.remove('hidden');
+
+        try {
+          const response = await fetch(purchaseUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': getCsrfToken(),
+              'X-Requested-With': 'XMLHttpRequest'
+            },
+            credentials: 'same-origin'
+          });
+
+          const data = await response.json();
+          if (data.status === 'success') {
+            Toastify({
+              text: 'Урок успешно куплен!',
+              duration: 3000,
+              backgroundColor: 'var(--success-color)',
+              position: 'right',
+              gravity: 'top'
+            }).showToast();
+            setTimeout(() => window.location.reload(), 1000);
+          } else {
+            throw new Error(data.message);
+          }
+        } catch (error) {
+          Toastify({
+            text: `Ошибка: ${error.message || 'Не удалось купить урок'}`,
+            duration: 3000,
+            backgroundColor: 'var(--error-color)',
+            position: 'right',
+            gravity: 'top'
+          }).showToast();
+        } finally {
+          closeModal();
+        }
+      });
+
+      // Сворачивание/разворачивание тем
+      document.querySelectorAll('.toggle-topic-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const topicCard = btn.closest('.topic-card');
+          const content = topicCard.querySelector('.topic-content');
+          content.classList.toggle('collapsed');
+          btn.classList.toggle('toggled');
+          btn.setAttribute('aria-label', content.classList.contains('collapsed') ? 'Развернуть тему' : 'Свернуть тему');
+        });
+      });
+    });
+  </script>
+</body>
+</html>

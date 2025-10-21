@@ -1,0 +1,2212 @@
+<!DOCTYPE html>
+  {% load static %}
+<html lang="ru">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Главная — Онлайн-школа</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css"
+        />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+  rel="stylesheet"
+    </head>
+
+    <style>
+
+   /* Подключаем Montserrat по умолчанию */
+html {
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* === Переменные === */
+:root {
+  --clr-primary: #6c63ff; /* Основной фиолетовый */
+  --clr-secondary: #a162f7; /* Вторичный фиолетовый */
+  --clr-accent: #c0ff33; /* Лаймовый акцент */
+  --clr-bg: #f9f9fb; /* Фон */
+  --clr-gray: #6b7280; /* Серый */
+  --clr-dark: #111827; /* Тёмный */
+  --clr-light: #ffffff; /* Светлый */
+  --radius: 1.5rem; /* Скругления */
+}
+
+/* === Сброс стилей === */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Montserrat', sans-serif;
+  background-color: var(--clr-bg);
+  color: var(--clr-dark);
+  line-height: 1.6;
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Фоновая картинка с прозрачностью */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('/custom_images/20170457_v1043-081a.jpg');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.05;
+  z-index: -1;
+}
+
+/* Увеличение страницы на 125% для десктопов */
+@media (min-width: 769px) {
+  html {
+    zoom: 1.1; /* Увеличение на 125% для десктопов */
+  }
+}
+
+/* === Контейнер === */
+.container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* === Шапка сайта === */
+#site-header {
+  position: sticky;
+  top: 0;
+  background: var(--clr-light);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  z-index: 1000;
+  animation: slideInDown 0.5s ease-out;
+}
+
+.header__wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 0;
+}
+
+.logo {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--clr-primary);
+  text-decoration: none;
+  padding: 0.5rem 0.5rem; /* Уменьшен padding слева для приближения к краю */
+  display: flex;
+  align-items: center;
+  transition: transform 0.3s;
+}
+
+.logo:hover {
+  transform: scale(1.1);
+}
+
+.logo i {
+  margin-right: 0.5rem;
+  font-size: 1.5rem;
+  color: var(--clr-accent);
+}
+
+.header__menu {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.header__menu--link {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--clr-dark);
+  text-decoration: none;
+  position: relative;
+}
+
+.header__menu--link::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -2px;
+  left: 0;
+  background-color: var(--clr-dark);
+  transition: width 0.3s ease;
+}
+
+.header__menu--link:hover::after {
+  width: 100%;
+}
+
+.auth-nav {
+  display: flex;
+  gap: 1rem;
+}
+
+.auth-nav a {
+  text-decoration: none;
+  font-weight: 600;
+  padding: 0.5rem 1.5rem;
+  border-radius: 2rem;
+  transition: all 0.3s;
+  font-size: 0.9rem;
+}
+
+.login-btn {
+  background: var(--clr-light);
+  color: var(--clr-primary);
+  border: 2px solid var(--clr-primary);
+}
+
+.login-btn:hover {
+  background: var(--clr-primary);
+  color: var(--clr-light);
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(108, 99, 255, 0.2);
+}
+
+.signup-btn {
+  background: linear-gradient(135deg, var(--clr-primary), var(--clr-secondary));
+  color: var(--clr-light);
+  border: none;
+}
+
+.signup-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(108, 99, 255, 0.3);
+}
+
+.personal-btn {
+  display: inline-block;
+  padding: 1.25rem 3rem;
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: var(--clr-light);
+  background: linear-gradient(135deg, var(--clr-primary), var(--clr-secondary));
+  border: none;
+  border-radius: 2.5rem;
+  transition: all 0.3s ease-in-out;
+}
+
+.personal-btn:hover {
+  box-shadow: 0 6px 18px rgba(108, 99, 255, 0.35);
+  transform: scale(1.05);
+}
+
+/* Гамбургер-меню */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 30px;
+  height: 21px;
+  cursor: pointer;
+  z-index: 100;
+}
+
+.hamburger span {
+  display: block;
+  height: 3px;
+  width: 100%;
+  background-color: var(--clr-dark);
+  border-radius: 3px;
+  transition: all 0.3s ease;
+}
+
+.hamburger.active span:nth-child(1) {
+  transform: translateY(9px) rotate(45deg);
+}
+
+.hamburger.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger.active span:nth-child(3) {
+  transform: translateY(-9px) rotate(-45deg);
+}
+
+.no-scroll {
+  overflow: hidden;
+}
+
+/* === Hero-секция === */
+#hero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 4rem 0;
+  background: linear-gradient(135deg, rgba(108, 99, 255, 0.95), rgba(161, 98, 247, 0.95));
+  color: var(--clr-light);
+  overflow: hidden;
+}
+
+.hero-content {
+  max-width: 60%;
+  padding: 2rem;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: var(--radius);
+  animation: slideInToOffset 1s ease-out forwards;
+  letter-spacing: 0.05em; /* Увеличен межбуквенный интервал */
+}
+
+@keyframes slideInToOffset {
+  from { opacity: 0; transform: translateX(-100px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+#hero h1 {
+  font-size: 3rem;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+}
+
+#hero p {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+}
+
+.hero-form {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.hero-form .form-group {
+  flex: 3;
+  position: relative;
+}
+
+.hero-form .form-group i {
+  position: absolute;
+  left: 1.2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--clr-gray);
+  font-size: 1.2rem;
+}
+
+.hero-form input {
+  width: 100%;
+  padding: 1.2rem 1.5rem 1.2rem 3rem;
+  font-size: 1.5rem; /* Увеличиваем размер шрифта, например, до 1.25rem */
+  color: black;
+  background: var(--clr-light);
+  border: 2px solid var(--clr-accent);
+  border-radius: var(--radius);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.hero-form input:focus {
+  outline: none;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.hero-form input::placeholder {
+  color: black;
+}
+
+.hero-form button {
+  flex: 1;
+  padding: 1.2rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--clr-accent);
+  color: var(--clr-dark);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  white-space: nowrap; /* Добавьте это свойство */
+}
+
+.hero-form button i {
+  font-size: 1.2rem;
+  transition: transform 0.3s ease;
+}
+
+.hero-form button:hover {
+  background: #b8f02b;
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.hero-form button:hover i {
+  transform: translateX(5px);
+}
+
+.hero__img {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  width: 37%; /* Увеличен размер маскота */
+  max-width: 500px; /* Увеличен max-width */
+  height: auto;
+  z-index: 1;
+  animation: float 3s ease-in-out infinite;
+}
+
+.hero__img--second {
+  display: none;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(-50%) translateX(0); }
+  50% { transform: translateY(-50%) translateX(-20px); }
+}
+
+/* === Обзор курсов === */
+#courses-overview {
+  padding: 4rem 0;
+}
+
+#courses-overview h2 {
+  font-size: 2.5rem;
+  color: var(--clr-secondary);
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.course-categories {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+.category {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  background: var(--clr-light);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s;
+  min-height: 300px;
+}
+
+.category::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  background: linear-gradient(90deg, var(--clr-primary), var(--clr-secondary));
+}
+
+.category:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+}
+
+.category i {
+  font-size: 3rem;
+  color: var(--clr-primary);
+  margin-bottom: 1rem;
+}
+
+.category h3 {
+  font-size: 1.8rem;
+  text-align: center;
+}
+
+.category p {
+  font-size: 1rem;
+  color: var(--clr-gray);
+  text-align: center;
+}
+
+.category.highlighted {
+  background: linear-gradient(135deg, var(--clr-secondary), var(--clr-primary));
+  color: var(--clr-light);
+}
+
+.category.highlighted i {
+  color: var(--clr-accent);
+}
+
+/* === Наставники === */
+#mentors {
+  padding: 4rem 0;
+}
+
+#mentors h2 {
+  font-size: 2.5rem;
+  color: var(--clr-primary);
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+#mentors p.section-subtitle {
+  text-align: center;
+  color: var(--clr-gray);
+  font-size: 1rem;
+  margin-bottom: 2rem;
+}
+
+.mentors-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  padding-top: 2rem;
+}
+
+.mentor {
+  background: var(--clr-light);
+  border-radius: var(--radius);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s;
+  padding: 1.5rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.mentor::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(to right, var(--clr-primary), var(--clr-secondary));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s ease;
+}
+
+.mentor:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 35px rgba(108, 99, 255, 0.15);
+}
+
+.mentor:hover::before {
+  transform: scaleX(1);
+}
+
+.mentor img {
+  width: 100%;
+  max-width: 150px;
+  height: auto;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+}
+
+.mentor:hover img {
+  transform: scale(1.05);
+}
+
+.mentor h4 {
+  font-size: 1.3rem;
+  color: var(--clr-primary);
+  margin-bottom: 0.5rem;
+}
+
+.mentor p {
+  font-size: 0.95rem;
+  color: var(--clr-gray);
+}
+
+.mentor .mentor-info {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: rgba(108, 99, 255, 0.05);
+  border-radius: 0.75rem;
+  transition: all 0.3s ease;
+}
+
+.mentor:hover .mentor-info {
+  background: rgba(108, 99, 255, 0.1);
+}
+
+/* === Отзывы === */
+#reviews {
+  padding: 4rem 0;
+}
+
+#reviews h2 {
+  font-size: 2.5rem;
+  color: var(--clr-primary);
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.reviews-list {
+  display: flex;
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.review {
+  display: flex;
+  gap: 2rem;
+  background: var(--clr-light);
+  padding: 1.5rem;
+  border-radius: var(--radius);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.review::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(to right, var(--clr-primary), var(--clr-secondary));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s ease;
+}
+
+.review:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 35px rgba(108, 99, 255, 0.15);
+}
+
+.review:hover::before {
+  transform: scaleX(1);
+}
+
+.review__images {
+  width: 45%;
+  height: 400px;
+  position: relative;
+}
+
+.review__image-wrapper {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  transition: all 0.6s ease;
+}
+
+.review__image-wrapper.active {
+  z-index: 3;
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.review__image-wrapper.prev {
+  z-index: 2;
+  transform: translateX(-30%) scale(0.9);
+  opacity: 0.6;
+}
+
+.review__image-wrapper.prev-prev {
+  z-index: 1;
+  transform: translateX(-60%) scale(0.8);
+  opacity: 0.3;
+}
+
+.review__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 20px;
+}
+
+.review__content {
+  width: 55%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 1rem;
+  opacity: 0;
+  transform: partial-btn translateY(20px);
+  transition: all 0.4s ease;
+}
+
+.review__content.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.review__name {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--clr-primary);
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.review__status {
+  font-size: 1rem;
+  color: var(--clr-gray);
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.review__text {
+  font-size: 1.1rem;
+  text-align: center;
+}
+
+.reviews-nav {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.reviews-arrow {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--clr-light);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s;
+}
+
+.reviews-arrow:hover {
+  background: var(--clr-primary);
+  color: var(--clr-light);
+}
+
+/* === История создания === */
+#about-us {
+  padding: 4rem 0;
+  position: relative;
+}
+
+#about-us h2 {
+  font-size: 2.5rem;
+  color: var(--clr-secondary);
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.founders-row {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.about-image {
+  background: var(--clr-light);
+  padding: 1.5rem;
+  border-radius: var(--radius);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  text-align: center;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.about-image::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 5px;
+  bottom: 0;
+  left: 0;
+  background: linear-gradient(to right, var(--clr-primary), var(--clr-accent));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+
+.about-image:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.about-image:hover::after {
+  transform: scaleX(1);
+}
+
+.founder-img {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 1rem;
+  border: 3px solid var(--clr-accent);
+  transition: all 0.3s ease;
+}
+
+.about-image:hover .founder-img {
+  transform: scale(1.05);
+  border-color: var(--clr-primary);
+}
+
+.about-image p {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--clr-primary);
+}
+
+.about-image span {
+  font-size: 0.9rem;
+  color: var(--clr-gray);
+}
+
+.history-timeline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+}
+
+.history-item {
+  flex: 1;
+  min-width: 200px;
+  max-width: 300px;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s;
+  text-align: center;
+  position: relative;
+}
+
+.history-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.history-year {
+  position: absolute;
+  top: -0.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--clr-primary);
+  color: var(--clr-light);
+  padding: 0.3rem 0.7rem;
+  border-radius: 2rem;
+  font-size: 0.9rem;
+}
+
+.history-item h3 {
+  font-size: 1.2rem;
+  color: var(--clr-secondary);
+  margin: 0.5rem 0;
+}
+
+.history-item p {
+  font-size: 0.95rem;
+}
+
+/* === Почему мы === */
+#why-us {
+  padding: 4rem 0;
+}
+
+#why-us h2 {
+  font-size: 2.5rem;
+  color: var(--clr-secondary);
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.stat-card {
+  background: var(--clr-light);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  text-align: center;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(to right, var(--clr-primary), var(--clr-secondary));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 35px rgba(108, 99, 255, 0.15);
+}
+
+.stat-card:hover::before {
+  transform: scaleX(1);
+}
+
+.stat-icon {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--clr-primary), var(--clr-secondary));
+  color: var(--clr-light);
+  border-radius: 50%;
+  margin: 0 auto 1rem;
+  font-size: 1.5rem;
+}
+
+.stat-number {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--clr-primary);
+  margin-bottom: 0.5rem;
+}
+
+.stat-number span {
+  font-size: 1.5rem;
+  color: var(--clr-accent);
+}
+
+.stat-content p {
+  font-size: 0.95rem;
+  color: var(--clr-gray);
+}
+
+/* === Персональная стратегия === */
+#strategy {
+  padding: 4rem 0;
+}
+
+#strategy h2 {
+  font-size: 2.5rem;
+  color: var(--clr-secondary);
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.strategy-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.strategy-content {
+  flex: 1;
+  min-width: 300px;
+}
+
+#strategy p {
+  font-size: 1rem;
+  color: var(--clr-gray);
+  margin-bottom: 1.5rem;
+}
+
+.strategy-benefits {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.strategy-benefit {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.strategy-benefit i {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--clr-accent);
+  color: var(--clr-dark);
+  border-radius: 50%;
+  font-size: 1rem;
+}
+
+.strategy-benefit span {
+  font-size: 1rem;
+  color: var(--clr-dark);
+}
+
+.strategy-form-wrapper {
+  flex: 1;
+  min-width: 300px;
+  background: var(--clr-light);
+  border-radius: var(--radius);
+  padding: 2rem;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+.strategy-form-wrapper::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  background: linear-gradient(to right, var(--clr-primary), var(--clr-secondary));
+}
+
+#strategy-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-group {
+  position: relative;
+}
+
+.form-group i {
+  position: absolute;
+  left: 1.2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--clr-gray);
+  font-size: 1.2rem;
+}
+
+#strategy-form input {
+  padding: 1.2rem 1.5rem 1.2rem 3rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  width: 100%;
+  font-size: 0.95rem;
+}
+
+#strategy-form input:focus {
+  border-color: var(--clr-primary);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.2);
+}
+
+#strategy-form button {
+  background: linear-gradient(135deg, var(--clr-primary), var(--clr-secondary));
+  color: var(--clr-light);
+  padding: 1.2rem 1.5rem;
+  border: none;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+}
+
+#strategy-form button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(108, 99, 255, 0.25);
+}
+
+/* === Система образования === */
+#education-system {
+  padding: 4rem 0;
+}
+
+#education-system h2 {
+  font-size: 2.5rem;
+  color: var(--clr-secondary);
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+#education-system .subtitle {
+  text-align: center;
+  color: var(--clr-gray);
+  font-size: 1rem;
+  margin-bottom: 2rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.education-principles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.principle {
+  background: var(--clr-light);
+  padding: 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+  text-align: center;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.principle::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(to right, var(--clr-primary), var(--clr-secondary));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s ease;
+}
+
+.principle:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+}
+
+.principle:hover::before {
+  transform: scaleX(1);
+}
+
+.principle-icon {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--clr-primary), var(--clr-secondary));
+  border-radius: 50%;
+  color: var(--clr-light);
+  font-size: 1.8rem;
+}
+
+.principle h3 {
+  font-size: 1.2rem;
+  color: var(--clr-dark);
+  margin-bottom: 0.5rem;
+}
+
+.principle p {
+  font-size: 0.95rem;
+  color: var(--clr-gray);
+}
+
+/* === Плавающая кнопка === */
+#floating-button {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  background: var(--clr-accent);
+  color: var(--clr-dark);
+  border: none;
+  border-radius: 2rem;
+  padding: 1rem 1.5rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  z-index: 100;
+  transition: all 0.3s;
+  display: none;
+  align-items: center;
+  font-size: 0.95rem;
+}
+
+#floating-button i {
+  margin-right: 0.5rem;
+  font-size: 1.2rem;
+}
+
+#floating-button:hover {
+  background: #aacc00;
+  transform: scale(1.1);
+}
+
+/* === Футер === */
+#site-footer {
+  background: linear-gradient(135deg, var(--clr-primary), var(--clr-secondary));
+  color: var(--clr-light);
+  padding: 3rem 0 2rem;
+}
+
+.footer-content {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.footer-info, .footer-legal {
+  flex: 1;
+  min-width: 200px;
+}
+
+.footer-logo h2 {
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.footer-logo p {
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+
+.footer-contacts p {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.8rem;
+  font-size: 1rem;
+}
+
+.footer-contacts i {
+  margin-right: 0.8rem;
+  font-size: 1.2rem;
+  color: var(--clr-accent);
+}
+
+.footer-legal p {
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  opacity: 0.9;
+}
+
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.footer-links {
+  display: flex;
+  gap: 1rem;
+}
+
+.footer-links a {
+  color: var(--clr-light);
+  text-decoration: none;
+  font-size: 0.9rem;
+  opacity: 0.7;
+}
+
+.footer-links a:hover {
+  opacity: 1;
+}
+
+/* === Общие стили для заголовков === */
+section h2 {
+  text-align: center;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  color: var(--clr-secondary);
+  position: relative;
+  z-index: 1;
+}
+
+/* === Анимации === */
+@keyframes slideInDown {
+  from { transform: translateY(-100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes fadeInRight {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.2; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(1.1); }
+}
+
+/* === Адаптивность === */
+@media (max-width: 1024px) {
+  .course-categories {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .mentors-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .review {
+    flex-direction: column;
+  }
+
+  .review__images, .review__content {
+    width: 100%;
+  }
+
+  .review__images {
+    height: 300px;
+  }
+
+  .reviews-nav {
+    bottom: -3rem;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0 15px;
+  }
+
+  .logo {
+    font-size: 1.5rem;
+    padding: 0.5rem 0; /* Уменьшен padding для мобильных */
+  }
+
+  .hamburger {
+    display: flex;
+  }
+
+  .header__menu {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 80%;
+    max-width: 300px;
+    height: 100vh;
+    background: var(--clr-light);
+    flex-direction: column;
+    justify-content: center;
+    padding: 2rem;
+    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+    transition: right 0.4s ease;
+  }
+
+  .header__menu.active {
+    right: 0;
+  }
+
+  .auth-nav {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .personal-btn {
+    padding: 0.8rem 2rem; /* Уменьшен padding для мобильных */
+    font-size: 1rem; /* Уменьшен размер шрифта */
+    border-radius: 1.5rem; /* Уменьшен радиус скругления */
+  }
+
+  #hero {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .hero-content {
+    max-width: 100%;
+    padding: 1.5rem;
+    animation: none;
+    letter-spacing: 0.03em; /* Меньший межбуквенный интервал для мобильных */
+  }
+
+  #hero h1 {
+    font-size: 2rem;
+  }
+
+  #hero p {
+    font-size: 1rem;
+  }
+
+  .hero-form {
+    flex-direction: column;
+  }
+
+  .hero-form .form-group, .hero-form button {
+    flex: none;
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .hero__img, .hero__img--second {
+    display: none;
+  }
+
+  .course-categories {
+    grid-template-columns: 1fr;
+  }
+
+  .mentors-list {
+    grid-template-columns: 1fr;
+  }
+
+  .founders-row {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .founder-img {
+    width: 120px;
+    height: 120px;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .strategy-container {
+    flex-direction: column;
+  }
+
+  .education-principles {
+    grid-template-columns: 1fr;
+  }
+
+  .principle-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 1.5rem;
+  }
+
+  #floating-button {
+    padding: 0.8rem 1.2rem;
+    font-size: 0.9rem;
+  }
+
+  .footer-content {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  #hero h1 {
+    font-size: 1.8rem;
+  }
+
+  #hero p {
+    font-size: 0.9rem;
+  }
+
+  .category h3 {
+    font-size: 1.5rem;
+  }
+
+  .mentor img {
+    max-width: 120px;
+  }
+
+  .review__images {
+    height: 250px;
+  }
+
+  .strategy-form-wrapper {
+    padding: 1.5rem;
+  }
+
+  #strategy-form input {
+    padding: 1rem 1.5rem 1rem 3rem;
+    font-size: 0.9rem;
+  }
+
+  #strategy-form button {
+    padding: 1rem 1.5rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .container {
+    padding: 0 10px;
+  }
+
+  .logo {
+    font-size: 1.2rem;
+    padding: 0.5rem 0;
+  }
+
+  #hero h1 {
+    font-size: 1.6rem;
+  }
+
+  #hero p {
+    font-size: 0.85rem;
+  }
+
+  .hero-form input, .hero-form button {
+    padding: 0.8rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  section h2 {
+    font-size: 2rem;
+  }
+
+  .category i {
+    font-size: 2.5rem;
+  }
+
+  .category h3 {
+    font-size: 1.3rem;
+  }
+}
+    </style>
+
+    <body>
+
+        <!-- Header с логотипом, регистрацией и входом -->
+        <header id="site-header">
+            <div class="container">
+                <div class="header__wrapper">
+                    <a class="logo">Multy</a>
+                    <nav class="header__menu">
+                        <a href="#about-us" class="header__menu--link">О нас</a>
+                        <a href="#contacts" class="header__menu--link">Контакты</a>
+                        <a href="#mentors" class="header__menu--link">Команда</a>
+                        <a href="#reviews" class="header__menu--link">Отзывы</a>
+                        <a href="#about-us" class="header__menu--link">Наша история</a>
+                    </nav>
+                    <form method="post" action="{% url 'login' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="personal-btn">Личный кабинет</button>
+                    </form>
+                    <div class="hamburger">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- 1. Продающая страница -->
+        <section id="hero">
+  <div class="container">
+    <div class="hero-content">
+      <h1>Поможем построить успешное будущее для вашего ребёнка!</h1>
+  <p>
+    Начните обучение на любом курсе с двух первых<br>
+      бесплатных уроков и консультации с куратором!
+  </p>
+      <form id="hero-form" class="hero-form">
+        <div class="form-group">
+          <input type="tel" placeholder="+7 (___) ___-__-__" required />
+        </div>
+        <button type="submit">
+          <span>Подобрать курс</span>
+          <i class="ri-arrow-right-line"></i>
+        </button>
+      </form>
+    </div>
+
+    <img id="mascot" src="/custom_images/1.png" alt="Маскот" class="hero__img" />
+
+    <img  src="/custom_images/pen-cross.svg" alt="" class="hero__img--second" />
+  </div>
+</section>
+
+
+        <!-- 2. Панель с тремя блоками курсов -->
+        <section id="courses-overview">
+            <div class="container">
+                <h2>Выберите направление обучения</h2>
+                <div class="course-categories">
+                    <div class="category">
+                        <i class="ri-book-2-line"></i>
+                        <h3>Школьная подготовка</h3>
+
+                    </div>
+                    <div class="category">
+                        <i class="ri-graduation-cap-line"></i>
+                        <h3>ЕГЭ и ОГЭ</h3>
+
+                    </div>
+                    <div class="category highlighted">
+                        <i class="ri-trophy-line"></i>
+                        <h3>Олимпиадные предметы</h3>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Наставники -->
+        <section id="mentors" class="mentors-section">
+            <div class="container">
+                <h2>Наши наставники</h2>
+                <p class="section-subtitle">
+                    Опытные преподаватели с реальными достижениями
+                </p>
+                <div class="mentors-list">
+                    <div class="mentor">
+                        <img
+
+                            src= '/custom_images/free-icon-young-man-4440953.png'
+                            alt="Фотография наставника"
+                        />
+                        <div class="mentor-details">
+                            <h4>Дарья Паивина</h4>
+                            <p>Математика • Средний балл учеников: 87</p>
+                            <p class="mentor-description">
+                                10 лет опыта подготовки к олимпиадам, победитель
+                                ВСОШ по экономике 2017 года
+                            </p>
+                            <div class="mentor-info">
+                                <p>
+                                    "Моя цель — вдохновить учеников на успех."
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mentor">
+                        <img
+                            src='/custom_images/free-icon-young-man-4440953.png'
+                            alt="Фотография наставника"
+                        />
+                        <div class="mentor-details">
+                            <h4>Дарья Паивина</h4>
+                            <p>Математика • Средний балл учеников: 87</p>
+                            <p class="mentor-description">
+                                10 лет опыта подготовки к олимпиадам, победитель
+                                ВСОШ по экономике 2017 года
+                            </p>
+                            <div class="mentor-info">
+                                <p>
+                                    "Моя цель — вдохновить учеников на успех."
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mentor">
+                        <img
+                            src='/custom_images/free-icon-young-man-4440953.png'
+                            alt="Фотография наставника"
+                        />
+                        <div class="mentor-details">
+                            <h4>Дарья Паивина</h4>
+                            <p>Математика • Средний балл учеников: 87</p>
+                            <p class="mentor-description">
+                                10 лет опыта подготовки к олимпиадам, победитель
+                                ВСОШ по экономике 2017 года
+                            </p>
+                            <div class="mentor-info">
+                                <p>
+                                    "Моя цель — вдохновить учеников на успех."
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mentor">
+                        <img
+                            src='/custom_images/free-icon-young-man-4440953.png'
+                            alt="Фотография наставника"
+                        />
+                        <div class="mentor-details">
+                            <h4>Дарья Паивина</h4>
+                            <p>Математика • Средний балл учеников: 87</p>
+                            <p class="mentor-description">
+                                10 лет опыта подготовки к олимпиадам, победитель
+                                ВСОШ по экономике 2017 года
+                            </p>
+                            <div class="mentor-info">
+                                <p>
+                                    "Моя цель — вдохновить учеников на успех."
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mentor">
+                        <img
+                            src='/custom_images/free-icon-young-man-4440953.png'
+                            alt="Фотография наставника"
+                        />
+                        <div class="mentor-details">
+                            <h4>Дарья Паивина</h4>
+                            <p>Математика • Средний балл учеников: 87</p>
+                            <p class="mentor-description">
+                                10 лет опыта подготовки к олимпиадам, победитель
+                                ВСОШ по экономике 2017 года
+                            </p>
+                            <div class="mentor-info">
+                                <p>
+                                    "Моя цель — вдохновить учеников на успех."
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mentor">
+                        <img
+                            src='/custom_images/free-icon-young-man-4440953.png'
+                            alt="Фотография наставника"
+                        />
+                        <div class="mentor-details">
+                            <h4>Дарья Паивина</h4>
+                            <p>Математика • Средний балл учеников: 87</p>
+                            <p class="mentor-description">
+                                10 лет опыта подготовки к олимпиадам, победитель
+                                ВСОШ по экономике 2017 года
+                            </p>
+                            <div class="mentor-info">
+                                <p>
+                                    "Моя цель — вдохновить учеников на успех."
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Добавьте других наставников аналогично -->
+                </div>
+            </div>
+        </section>
+        <!-- 4. Отзывы -->
+        <section id="reviews">
+            <div class="container">
+                <h2>Отзывы</h2>
+                <div class="reviews-list">
+                    <div class="review">
+                        <div class="review__images">
+                            <div class="review__image-wrapper active">
+                                <img
+                                    src='/custom_images/free-icon-young-man-4440953.png'
+                                    alt=""
+                                    class="review__image"
+                                />
+                            </div>
+                            <div class="review__image-wrapper prev">
+                                <img
+                                    src='/custom_images/free-icon-young-man-4440953.png'
+                                    alt=""
+                                    class="review__image"
+                                />
+                            </div>
+                            <div class="review__image-wrapper prev-prev">
+                                <img
+                                    src='/custom_images/free-icon-young-man-4440953.png'
+                                    alt=""
+                                    class="review__image"
+                                />
+                            </div>
+                            <div class="reviews-nav">
+                                <button class="reviews-arrow prev">
+                                    <i class="ri-arrow-left-s-line"></i>
+                                </button>
+                                <button class="reviews-arrow next">
+                                    <i class="ri-arrow-right-s-line"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="review__content active">
+                            <p class="review__name">Анна Иванова</p>
+                            <p class="review__status">Мама ученика 9 класса</p>
+                            <p class="review__text">
+                                "Я очень довольна результатом моего ребёнка.
+                                Благодаря вашей школе он стал более уверенным в
+                                себе и успешно сдал экзамены. Отдельное спасибо
+                                преподавателю математики!"
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- История создания школы -->
+        <section id="about-us">
+            <div class="container">
+                <h2>История создания</h2>
+
+                <div class="founders-row">
+                    <div class="about-image">
+                        <img
+                            src='/custom_images/free-icon-young-man-4440953.png'
+                            alt="Основатель школы"
+                            class="founder-img"
+                        />
+                        <p>Иван Петров</p>
+                        <span>Основатель, CEO</span>
+                    </div>
+                    <div class="about-image">
+                        <img
+                            src='/custom_images/free-icon-young-man-4440953.png'
+                            alt="Соучредитель"
+                            class="founder-img"
+                        />
+                        <p>Арсений Смирнов</p>
+                        <span>Соучредитель, CPO</span>
+                    </div>
+                </div>
+
+                <div class="about-content">
+                    <div class="about-text">
+                        <div class="history-timeline">
+                            <div class="history-item">
+                                <span class="history-year">2018</span>
+                                <h3>Зарождение идеи</h3>
+                                <p>
+                                    Группа студентов МФТИ основала школу с целью
+                                    сделать качественное образование доступным
+                                    для детей из любой точки страны.
+                                </p>
+                            </div>
+                            <div class="history-item">
+                                <span class="history-year">2019</span>
+                                <h3>Первые успехи</h3>
+                                <p>
+                                    Начав с небольших онлайн-курсов по
+                                    математике, мы быстро расширили направления,
+                                    увидев впечатляющие результаты наших
+                                    учеников.
+                                </p>
+                            </div>
+                            <div class="history-item">
+                                <span class="history-year">2020-2022</span>
+                                <h3>Создание методики</h3>
+                                <p>
+                                    За несколько лет нам удалось разработать
+                                    уникальную методику, которая помогла более
+                                    3000 школьников улучшить успеваемость.
+                                </p>
+                            </div>
+                            <div class="history-item">
+                                <span class="history-year">Сегодня</span>
+                                <h3>Наша миссия</h3>
+                                <p>
+                                    В нашей команде работают лучшие педагоги и
+                                    методисты. Мы продолжаем вдохновлять детей
+                                    на достижения и раскрывать их потенциал.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Почему мы? -->
+        <section id="why-us">
+            <div class="container">
+                <h2>Почему выбирают нашу школу</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="ri-line-chart-line"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number">92<span>%</span></div>
+                            <p>учеников улучшают оценку за 2 месяца</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="ri-group-line"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number">1200<span>+</span></div>
+                            <p>довольных родителей</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="ri-user-star-line"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number">30<span>+</span></div>
+                            <p>опытных преподавателей в команде</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="ri-computer-line"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number">100<span>%</span></div>
+                            <p>онлайн — удобно и безопасно</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Стратегия для ребёнка -->
+        <section id="strategy">
+            <div class="container">
+                <div class="strategy-container">
+                    <div class="strategy-content">
+                        <h2>Составим персональную стратегию продвижения</h2>
+                        <p>
+                            Подберём занятия, темп и наставника, подходящего
+                            именно вашему ребёнку
+                        </p>
+                        <div class="strategy-benefits">
+                            <div class="strategy-benefit">
+                                <i class="ri-check-line"></i>
+                                <span
+                                    >Бесплатная консультация с методистом</span
+                                >
+                            </div>
+                            <div class="strategy-benefit">
+                                <i class="ri-check-line"></i>
+                                <span>Индивидуальный план развития</span>
+                            </div>
+                            <div class="strategy-benefit">
+                                <i class="ri-check-line"></i>
+                                <span>Подбор оптимальной нагрузки</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="strategy-form-wrapper">
+                        <form id="strategy-form">
+                            <div class="form-group">
+                                <i class="ri-user-line"></i>
+                                <input type="text" placeholder="Имя" required />
+                            </div>
+                            <div class="form-group">
+                                <i class="ri-mail-line"></i>
+                                <input
+                                    type="email"
+                                    placeholder="Email"
+                                    required
+                                />
+                            </div>
+                            <div class="form-group">
+                                <i class="ri-phone-line"></i>
+                                <input
+                                    type="tel"
+                                    placeholder="Телефон"
+                                    required
+                                />
+                            </div>
+                            <button type="submit">
+                                <span>Получить стратегию</span>
+                                <i class="ri-arrow-right-line"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. Система образования -->
+        <section id="education-system">
+            <div class="container">
+                <h2>Как мы обучаем</h2>
+                <p class="subtitle section-subtitle">
+                    Наша система построена на инновационном подходе, который
+                    сочетает современные технологии и проверенные методики
+                </p>
+
+                <div class="education-principles">
+                    <div class="principle">
+                        <div class="principle-icon">
+                            <i class="ri-user-follow-line"></i>
+                        </div>
+                        <h3>Индивидуальный подход</h3>
+                        <p>
+                            Для каждого ученика разрабатывается индивидуальная
+                            программа с учетом его способностей и целей
+                        </p>
+                    </div>
+
+                    <div class="principle">
+                        <div class="principle-icon">
+                            <i class="ri-team-line"></i>
+                        </div>
+                        <h3>Персональные наставники</h3>
+                        <p>
+                            Преподаватели с опытом, которые становятся
+                            настоящими менторами для учеников
+                        </p>
+                    </div>
+
+                    <div class="principle">
+                        <div class="principle-icon">
+                            <i class="ri-gamepad-line"></i>
+                        </div>
+                        <h3>Геймификация</h3>
+                        <p>
+                            Элементы игры в обучении повышают вовлеченность и
+                            мотивацию детей
+                        </p>
+                    </div>
+
+                    <div class="principle">
+                        <div class="principle-icon">
+                            <i class="ri-rocket-line"></i>
+                        </div>
+                        <h3>Система достижений</h3>
+                        <p>
+                            Выстраиваем процесс так, чтобы ребенок видел свой
+                            прогресс и получал регулярные успехи
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. Фиксированная кнопка -->
+        <button id="floating-button">
+            <i class="ri-arrow-right-line"></i>Выбрать курс
+        </button>
+
+        <!-- Футер сайта -->
+        <footer id="site-footer">
+            <div class="container">
+                <div class="footer-content">
+                    <div class="footer-info">
+                        <div class="footer-logo">
+                            <h2>Multy.ru</h2>
+                            <p>Онлайн-школа для детей от 6 до 17 лет</p>
+                        </div>
+                        <div class="footer-contacts">
+                            <p>
+                                <i class="ri-phone-line"></i> +7 (800) 555-35-35
+                            </p>
+                            <p><i class="ri-mail-line"></i> info@multy.ru</p>
+                        </div>
+                    </div>
+                    <div class="footer-legal">
+                        <p><strong>ООО "Мульти Образование"</strong></p>
+                        <p>
+                            Лицензия Министерства образования №1234 от
+                            01.01.2020
+                        </p>
+                        <p>ИНН: 1234567890 / ОГРН: 1234567890123</p>
+                        <p>Год основания: 2018</p>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>&copy; 2018-2024 Multy.ru. Все права защищены.</p>
+                    <div class="footer-links">
+                        <a href="#">Политика конфиденциальности</a>
+                        <a href="#">Пользовательское соглашение</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                // Анимация при прокрутке
+                const observer = new IntersectionObserver(
+                    (entries) => {
+                        entries.forEach((entry) => {
+                            if (entry.isIntersecting) {
+                                entry.target.classList.add("animate");
+                                entry.target.style.opacity = 1;
+                                entry.target.style.transform = "translateY(0)";
+                            }
+                        });
+                    },
+                    { threshold: 0.1 }
+                );
+
+                document
+                    .querySelectorAll(
+                        ".category, .mentor, .stats li, #strategy-form, .principle, .stat-card, .review, .about-image, .about-text"
+                    )
+                    .forEach((el) => {
+                        el.style.opacity = 0;
+                        el.style.transform = "translateY(20px)";
+                        el.style.transition = "all 0.5s ease-out";
+                        observer.observe(el);
+                    });
+
+                // Гамбургер меню
+                const hamburger = document.querySelector(".hamburger");
+                const menu = document.querySelector(".header__menu");
+
+                hamburger.addEventListener("click", () => {
+                    hamburger.classList.toggle("active");
+                    menu.classList.toggle("active");
+                    document.body.classList.toggle("no-scroll");
+                });
+
+                // Закрытие меню при клике на ссылку
+                const menuLinks = document.querySelectorAll(
+                    ".header__menu--link"
+                );
+                menuLinks.forEach((link) => {
+                    link.addEventListener("click", () => {
+                        hamburger.classList.remove("active");
+                        menu.classList.remove("active");
+                        document.body.classList.remove("no-scroll");
+                    });
+                });
+
+                // Плавающая кнопка
+                const floatingButton =
+                    document.getElementById("floating-button");
+                const mentorsSection =
+                    document.querySelector(".mentors-section");
+
+                const floatingObserver = new IntersectionObserver(
+                    (entries) => {
+                        entries.forEach((entry) => {
+                            if (entry.isIntersecting) {
+                                floatingButton.style.display = "flex";
+                            } else {
+                                floatingButton.style.display = "none";
+                            }
+                        });
+                    },
+                    { threshold: 0.1 }
+                );
+
+                floatingObserver.observe(mentorsSection);
+
+                // Валидация форм
+                const forms = document.querySelectorAll(
+                    "#hero-form, #strategy-form"
+                );
+                forms.forEach((form) => {
+                    form.addEventListener("submit", (e) => {
+                        e.preventDefault();
+                        const inputs = form.querySelectorAll("input");
+                        let valid = true;
+                        inputs.forEach((input) => {
+                            if (!input.value) {
+                                input.style.borderColor = "red";
+                                valid = false;
+                            } else {
+                                input.style.borderColor = "#6c63ff";
+                            }
+                        });
+                        if (valid) alert("Форма отправлена!");
+                    });
+                });
+
+                // Слайдер отзывов
+                const reviews = [
+                    {
+                        name: "Анна Иванова",
+                        status: "Мама ученика 9 класса",
+                        text: "Я очень довольна результатом моего ребёнка. Благодаря вашей школе он стал более уверенным в себе и успешно сдал экзамены. Отдельное спасибо преподавателю математики!",
+                        image: "free-icon-young-man-4440953.png",
+                    },
+                    {
+                        name: "Михаил Петров",
+                        status: "Отец ученицы 11 класса",
+                        text: "Дочь поступила в желаемый вуз благодаря подготовке в вашей школе. Преподаватели действительно знают своё дело и умеют заинтересовать детей.",
+                        image: "free-icon-young-man-4440953.png",
+                    },
+                    {
+                        name: "Елена Сидорова",
+                        status: "Мама ученика 7 класса",
+                        text: "Сын занимается уже второй год. Успеваемость значительно улучшилась, появился интерес к учёбе. Очень удобный формат онлайн-занятий.",
+                        image: "free-icon-young-man-4440953.png",
+                    },
+                ];
+
+                let currentIndex = 0;
+                const prevBtn = document.querySelector(".reviews-arrow.prev");
+                const nextBtn = document.querySelector(".reviews-arrow.next");
+                const content = document.querySelector(".review__content");
+                const imageWrappers = document.querySelectorAll(
+                    ".review__image-wrapper"
+                );
+
+                function updateSlide(direction = "next") {
+                    // Обновляем контент с фейдом
+                    content.style.opacity = "0";
+                    content.style.transform = "translateY(20px)";
+
+                    setTimeout(() => {
+                        content.querySelector(".review__name").textContent =
+                            reviews[currentIndex].name;
+                        content.querySelector(".review__status").textContent =
+                            reviews[currentIndex].status;
+                        content.querySelector(".review__text").textContent =
+                            reviews[currentIndex].text;
+
+                        content.style.opacity = "1";
+                        content.style.transform = "translateY(0)";
+                    }, 400);
+
+                    // Обновляем позиции фотографий
+                    imageWrappers.forEach((wrapper) => {
+                        if (wrapper.classList.contains("active")) {
+                            wrapper.classList.remove("active");
+                            wrapper.classList.add(
+                                direction === "next" ? "prev" : "prev-prev"
+                            );
+                        } else if (wrapper.classList.contains("prev")) {
+                            wrapper.classList.remove("prev");
+                            wrapper.classList.add(
+                                direction === "next" ? "prev-prev" : "active"
+                            );
+                        } else if (wrapper.classList.contains("prev-prev")) {
+                            wrapper.classList.remove("prev-prev");
+                            wrapper.classList.add(
+                                direction === "next" ? "active" : "prev"
+                            );
+                        }
+                    });
+                }
+
+                nextBtn.addEventListener("click", () => {
+                    currentIndex = (currentIndex + 1) % reviews.length;
+                    updateSlide("next");
+                });
+
+                prevBtn.addEventListener("click", () => {
+                    currentIndex =
+                        (currentIndex - 1 + reviews.length) % reviews.length;
+                    updateSlide("prev");
+                });
+
+                // Автопереключение
+                let slideInterval = setInterval(() => {
+                    nextBtn.click();
+                }, 5000);
+
+                // Останавливаем автопереключение при наведении
+                document
+                    .querySelector(".reviews-list")
+                    .addEventListener("mouseenter", () => {
+                        clearInterval(slideInterval);
+                    });
+
+                // Возобновляем автопереключение
+                document
+                    .querySelector(".reviews-list")
+                    .addEventListener("mouseleave", () => {
+                        slideInterval = setInterval(() => {
+                            nextBtn.click();
+                        }, 5000);
+                    });
+            });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Личный кабинет</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- GSAP for animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <style>
+        :root {
+            --primary-600: #6a11cb;
+            --primary-gradient: linear-gradient(135deg, #6A11CB 0%, #2575FC 100%);
+            --accent-color: #ff6b6b;
+            --hover-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        .avatar-container {
+            position: relative;
+            width: 100%;
+            max-width: 300px;
+            aspect-ratio: 1/1;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            border: 4px solid white;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        .avatar-container:hover {
+            transform: scale(1.05);
+        }
+        .avatar-overlay {
+            transition: opacity 0.3s ease;
+            background: rgba(106, 17, 203, 0.7);
+        }
+        .avatar-container:hover .avatar-overlay {
+            opacity: 1;
+        }
+        .progress-bar-container {
+            height: 12px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 9999px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            background: var(--primary-gradient);
+            border-radius: 9999px;
+            position: relative;
+            overflow: hidden;
+        }
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 80%);
+            animation: shimmer 2s infinite;
+        }
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        .level-badge {
+            background: var(--primary-gradient);
+            padding: 6px 14px;
+            border-radius: 9999px;
+            font-weight: 600;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+        .card-hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--hover-shadow);
+        }
+        .icon-hover {
+            transition: transform 0.3s ease;
+        }
+        .card-hover:hover .icon-hover {
+            transform: scale(1.2) rotate(5deg);
+        }
+        .stat-card {
+            transition: all 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        .achievement-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+        .achievement-icon {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            color: white;
+            font-size: 24px;
+        }
+        .activity-item {
+            border-left: 3px solid #6A11CB;
+            padding-left: 15px;
+            margin-bottom: 15px;
+        }
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger-color);
+            color: white;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        @media (max-width: 640px) {
+            .avatar-container {
+                max-width: 200px;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <a href="#" onclick="window.history.back()" class="fixed left-4 top-4 z-50 bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-2 rounded-full font-semibold shadow-lg hover:shadow-xl hover:-translate-x-1 hover:scale-105 transition-all duration-300">
+        ← Назад
+    </a>
+    
+    <div class="container mx-auto px-4 py-8 sm:py-12">
+        <!-- Header -->
+        <div class="relative text-center mb-10">
+            <h1 class="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-2">ЛИЧНЫЙ КАБИНЕТ</h1>
+            <p class="text-gray-600 max-w-2xl mx-auto">Управляйте своим профилем, отслеживайте прогресс и развивайтесь дальше</p>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Левая колонка - Аватар и основная информация -->
+            <div class="lg:col-span-1">
+                <!-- Avatar Card -->
+                <div class="bg-white/90 backdrop-blur-lg rounded-2xl shadow-xl p-6 mb-8 card-hover">
+                    <div class="flex justify-center mb-6">
+                        <div class="avatar-container rounded-full shadow-lg">
+                            <img src="https://picsum.photos/300/300" alt="Аватар" id="avatar-preview" class="w-full h-full object-cover">
+                            <div class="avatar-overlay absolute inset-0 opacity-0 flex items-center justify-center">
+                                <i class="fas fa-camera text-white text-2xl"></i>
+                            </div>
+                            <input type="file" id="avatar-upload" class="avatar-upload absolute inset-0 opacity-0 cursor-pointer" accept="image/*">
+                        </div>
+                    </div>
+                    <h3 class="text-2xl font-bold text-center mb-2">Александр Петров</h3>
+                    <p class="text-gray-600 text-center mb-4">Студент курса "Веб-разработка"</p>
+                    <div class="flex justify-center">
+                        <span class="level-badge text-white text-sm">Уровень 5</span>
+                    </div>
+                </div>
+                
+                <!-- Статистика -->
+                <div class="bg-white/90 backdrop-blur-lg rounded-2xl shadow-xl p-6 card-hover">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800">Статистика</h3>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center pb-2 border-b border-gray-100">
+                            <span class="text-gray-600">Пройдено уроков</span>
+                            <span class="font-semibold">24</span>
+                        </div>
+                        <div class="flex justify-between items-center pb-2 border-b border-gray-100">
+                            <span class="text-gray-600">Завершено тестов</span>
+                            <span class="font-semibold">27</span>
+                        </div>
+                        <div class="flex justify-between items-center pb-2 border-b border-gray-100">
+                            <span class="text-gray-600">Общее время обучения</span>
+                            <span class="font-semibold">182 ч</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Средний балл</span>
+                            <span class="font-semibold text-success-color">4.8</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Правая колонка - Детали профиля и достижения -->
+            <div class="lg:col-span-2">
+                <!-- User Info Card -->
+                <div class="bg-white/90 backdrop-blur-lg rounded-2xl shadow-xl p-6 sm:p-8 card-hover mb-8">
+                    <h3 class="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-6">Информация о пользователе</h3>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                        <div class="flex items-center p-4 bg-gray-50 rounded-xl card-hover">
+                            <i class="fas fa-envelope text-purple-600 text-xl icon-hover mr-3"></i>
+                            <div>
+                                <p class="text-sm text-gray-500">Email</p>
+                                <p class="font-semibold">user@example.com</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center p-4 bg-gray-50 rounded-xl card-hover">
+                            <i class="fas fa-calendar-alt text-purple-600 text-xl icon-hover mr-3"></i>
+                            <div>
+                                <p class="text-sm text-gray-500">Дата регистрации</p>
+                                <p class="font-semibold">15.03.2023 14:30</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center p-4 bg-gray-50 rounded-xl card-hover">
+                            <i class="fas fa-clock text-purple-600 text-xl icon-hover mr-3"></i>
+                            <div>
+                                <p class="text-sm text-gray-500">Время на платформе</p>
+                                <p class="font-semibold">90 дней, 12 часов</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center p-4 bg-gray-50 rounded-xl card-hover">
+                            <i class="fas fa-coins text-yellow-500 text-xl icon-hover mr-3"></i>
+                            <div>
+                                <p class="text-sm text-gray-500">Ваши токены</p>
+                                <p class="font-semibold">250</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center p-4 bg-gray-50 rounded-xl card-hover">
+                            <i class="fas fa-book text-purple-600 text-xl icon-hover mr-3"></i>
+                            <div>
+                                <p class="text-sm text-gray-500">Купленные уроки</p>
+                                <p class="font-semibold">12</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center p-4 bg-gray-50 rounded-xl card-hover">
+                            <i class="fas fa-trophy text-yellow-500 text-xl icon-hover mr-3"></i>
+                            <div>
+                                <p class="text-sm text-gray-500">Уровень</p>
+                                <span class="level-badge text-white text-sm">Уровень 5</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Progress Bar -->
+                    <div class="mb-6">
+                        <div class="flex justify-between mb-2">
+                            <p class="font-semibold">Прогресс до следующего уровня</p>
+                            <p class="text-purple-600 font-semibold"><span class="progress-text">0</span>%</p>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" style="width: 0%" data-progress="65"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- HP Points -->
+                    <div class="flex items-center p-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl card-hover">
+                        <i class="fas fa-star text-yellow-500 text-xl icon-hover mr-3"></i>
+                        <div>
+                            <p class="text-sm text-gray-500">Баллы (HP)</p>
+                            <p class="font-semibold text-xl" id="hp-value" data-hp="1500">0</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Достижения -->
+                <div class="bg-white/90 backdrop-blur-lg rounded-2xl shadow-xl p-6 card-hover">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800">Достижения</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="achievement-card p-4 flex items-center">
+                            <div class="achievement-icon mr-4">
+                                <i class="fas fa-graduation-cap"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold">Первый урок</h4>
+                                <p class="text-sm text-gray-600">Пройдите первый урок</p>
+                            </div>
+                        </div>
+                        <div class="achievement-card p-4 flex items-center">
+                            <div class="achievement-icon mr-4 bg-gradient-to-r from-yellow-400 to-orange-500">
+                                <i class="fas fa-medal"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold">Эксперт</h4>
+                                <p class="text-sm text-gray-600">Пройдите 10 тестов на 90%+</p>
+                            </div>
+                        </div>
+                        <div class="achievement-card p-4 flex items-center">
+                            <div class="achievement-icon mr-4 bg-gradient-to-r from-green-400 to-teal-500">
+                                <i class="fas fa-fire"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold">На волне</h4>
+                                <p class="text-sm text-gray-600">7 дней подряд учиться</p>
+                            </div>
+                        </div>
+                        <div class="achievement-card p-4 flex items-center">
+                            <div class="achievement-icon mr-4 bg-gradient-to-r from-blue-400 to-indigo-500">
+                                <i class="fas fa-crown"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold">Король викторин</h4>
+                                <p class="text-sm text-gray-600">Ответьте правильно на 50 вопросов</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // GSAP Animations
+            gsap.from('.card-hover', {
+                opacity: 0,
+                y: 30,
+                duration: 0.8,
+                stagger: 0.1,
+                ease: 'power2.out'
+            });
+            
+            // Progress Bar Animation
+            const progressBar = document.querySelector('.progress-bar');
+            const progressText = document.querySelector('.progress-text');
+            const progress = parseInt(progressBar.getAttribute('data-progress'));
+            gsap.to(progressBar, {
+                width: progress + '%',
+                duration: 1.2,
+                ease: 'power2.out',
+                delay: 0.3
+            });
+            gsap.to(progressText, {
+                innerText: progress,
+                duration: 1.2,
+                ease: 'power2.out',
+                delay: 0.3,
+                snap: { innerText: 1 }
+            });
+            
+            // HP Counter Animation
+            const hpElement = document.getElementById('hp-value');
+            const hp = parseInt(hpElement.getAttribute('data-hp'));
+            gsap.to(hpElement, {
+                innerText: hp,
+                duration: 2,
+                ease: 'power2.out',
+                snap: { innerText: 1 }
+            });
+            
+            // Avatar Preview
+            const avatarInput = document.getElementById('avatar-upload');
+            const avatarPreview = document.getElementById('avatar-preview');
+            avatarInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        avatarPreview.src = e.target.result;
+                        gsap.fromTo(avatarPreview, 
+                            { opacity: 0, scale: 0.8 },
+                            { opacity: 1, scale: 1, duration: 0.5, ease: 'back.out' }
+                        );
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

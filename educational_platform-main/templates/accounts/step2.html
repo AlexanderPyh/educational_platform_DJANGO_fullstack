@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Структура курса — Онлайн-школа</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* Основные стили из new_first.html */
+        :root {
+            --clr-primary: #6C63FF;
+            --clr-secondary: #A162F7;
+            --clr-accent: #C0FF33;
+            --clr-bg: #F9F9FB;
+            --clr-gray: #6B7280;
+            --clr-dark: #111827;
+            --clr-light: #FFFFFF;
+        }
+        
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--clr-bg);
+            color: var(--clr-dark);
+            line-height: 1.6;
+        }
+
+        /* Стили для структуры курса */
+        .course-structure {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .form-container {
+            background: var(--clr-light);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+
+        .heading-gradient {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            background: linear-gradient(135deg, var(--clr-primary), var(--clr-secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .subheading {
+            text-align: center;
+            color: var(--clr-gray);
+            margin-bottom: 2rem;
+        }
+
+        .topic-block {
+            background: var(--clr-bg);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .lesson-block {
+            background: var(--clr-light);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: var(--clr-primary);
+            color: var(--clr-light);
+        }
+
+        .btn-secondary {
+            background: var(--clr-light);
+            color: var(--clr-primary);
+            border: 1px solid currentColor;
+        }
+
+        .btn-add {
+            background: #e8f5e9;
+            color: #4CAF50;
+            border: 1px dashed currentColor;
+        }
+
+        .form-group {
+            margin-bottom: 5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .form-control {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 0.5rem;
+    font-size: 4rem; /* Увеличиваем размер шрифта, например, до 1.25rem */
+}
+
+        .actions-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: var(--clr-gray);
+            padding: 0.5rem 1rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header из new_first.html -->
+    <header id="site-header">
+        <div class="container">
+            <a href="/" class="logo">
+                <i class="ri-graduation-cap-fill"></i>
+                Multy.ru
+            </a>
+            <nav class="auth-nav">
+                <a href="{% url 'logout' %}" class="login-btn">Выйти</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Контент страницы -->
+    <div class="course-structure">
+        <a href="javascript:window.history.back()" class="back-button">
+            <i class="fas fa-arrow-left"></i>
+            <span>К информации о курсе</span>
+        </a>
+
+        <div class="form-container">
+            <div class="form-content">
+                <h1 class="heading-gradient">Структура курса</h1>
+                <p class="subheading">Введите данные тем курса и уроков. Для каждой темы заполните название, а для каждого урока – его название и стоимость в токенах.</p>
+
+                <form id="courseStructureForm">
+                    {% csrf_token %}
+                    <input type="hidden" name="course_id" value="{{ request.session.course_id }}">
+
+                    <div id="topicsContainer">
+                        <!-- Темы будут добавляться здесь динамически -->
+                    </div>
+
+                    <button type="button" id="addTopicBtn" class="btn btn-add" onclick="addTopic()">
+                        <i class="fas fa-plus"></i> Добавить тему
+                    </button>
+
+                    <div class="actions-container">
+                        <button type="button" class="btn btn-secondary" onclick="window.history.back()">
+                            <i class="fas fa-arrow-left"></i> Назад
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Сохранить и продолжить
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Глобальные счётчики для тем и уроков
+        let topicCount = 0;
+        let lessonCounts = {};
+
+        document.addEventListener('DOMContentLoaded', function() {
+            addTopic();
+            
+            // Обработка отправки формы
+            document.getElementById('courseStructureForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveCourseStructure();
+            });
+        });
+
+        function addTopic() {
+            topicCount++;
+            lessonCounts[topicCount] = 0;
+            const topicsContainer = document.getElementById('topicsContainer');
+            const topicDiv = document.createElement('div');
+            topicDiv.className = 'topic-block';
+            topicDiv.id = `topic-${topicCount}`;
+            topicDiv.innerHTML = `
+                <div class="topic-header">
+                    <h3>Тема ${topicCount}</h3>
+                    <button type="button" class="btn btn-danger" onclick="removeTopic(${topicCount})">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+                <div class="form-group">
+                    <label>Название темы:</label>
+                    <input type="text" name="topic_${topicCount}_title" class="form-control" required>
+                </div>
+                <div id="lessons-container-${topicCount}"></div>
+                <button type="button" class="btn btn-add" onclick="addLesson(${topicCount})">
+                    <i class="fas fa-plus"></i> Добавить урок
+                </button>
+            `;
+            topicsContainer.appendChild(topicDiv);
+            addLesson(topicCount);
+        }
+
+        function addLesson(topicNum) {
+            lessonCounts[topicNum]++;
+            const lessonNum = lessonCounts[topicNum];
+            const lessonsContainer = document.getElementById(`lessons-container-${topicNum}`);
+            const lessonDiv = document.createElement('div');
+            lessonDiv.className = 'lesson-block';
+            lessonDiv.innerHTML = `
+                <div class="lesson-header">
+                    <h4>Урок ${lessonNum}</h4>
+                    <button type="button" class="btn btn-danger" onclick="removeLesson(${topicNum}, ${lessonNum})">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="form-group">
+                    <label>Название урока:</label>
+                    <input type="text" name="topic_${topicNum}_lesson_${lessonNum}_title" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Стоимость (токены):</label>
+                    <input type="number" name="topic_${topicNum}_lesson_${lessonNum}_price" class="form-control" value="0" min="0" required>
+                </div>
+            `;
+            lessonsContainer.appendChild(lessonDiv);
+        }
+
+        function removeTopic(topicNum) {
+            const topicDiv = document.getElementById(`topic-${topicNum}`);
+            topicDiv.remove();
+            delete lessonCounts[topicNum];
+        }
+
+        function removeLesson(topicNum, lessonNum) {
+            const lessonDiv = document.querySelector(`#lessons-container-${topicNum} .lesson-block:nth-child(${lessonNum})`);
+            if (lessonDiv) {
+                lessonDiv.remove();
+            }
+        }
+
+        function saveCourseStructure() {
+            const topics = [];
+            
+            // Собираем данные тем и уроков
+            for (let i = 1; i <= topicCount; i++) {
+                const topicTitle = document.querySelector(`input[name="topic_${i}_title"]`);
+                if (!topicTitle) continue;
+                
+                const topicData = {
+                    title: topicTitle.value,
+                    lessons: []
+                };
+                
+                // Собираем уроки для темы
+                const lessonCount = lessonCounts[i] || 0;
+                for (let j = 1; j <= lessonCount; j++) {
+                    const lessonTitle = document.querySelector(`input[name="topic_${i}_lesson_${j}_title"]`);
+                    const lessonPrice = document.querySelector(`input[name="topic_${i}_lesson_${j}_price"]`);
+                    
+                    if (!lessonTitle || !lessonPrice) continue;
+                    
+                    topicData.lessons.push({
+                        title: lessonTitle.value,
+                        price: parseFloat(lessonPrice.value) || 0
+                    });
+                }
+                
+                topics.push(topicData);
+            }
+            
+            // Отправляем данные на сервер
+            fetch('{% url "save_course_structure" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({ topics })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = '{% url "step3" %}';
+                } else {
+                    alert('Ошибка при сохранении структуры курса: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Произошла ошибка при отправке данных');
+            });
+        }
+    </script>
+</body>
+</html>

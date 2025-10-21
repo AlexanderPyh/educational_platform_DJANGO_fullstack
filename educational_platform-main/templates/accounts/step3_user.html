@@ -1,0 +1,809 @@
+{% load static %}
+{% load custom_filters %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ lesson.title }}</title>
+    <!-- Подключение шрифта Montserrat -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Подключение Font Awesome для иконок -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Базовые стили уже встроены в <style> ниже -->
+</head>
+<style>
+:root {
+  --primary-gradient: linear-gradient(135deg, #6A11CB 0%, #2575FC 100%);
+  --hover-gradient: linear-gradient(135deg, #2575FC 0%, #6A11CB 100%);
+  --card-bg: rgba(255, 255, 255, 0.95);
+  --text-color: #2D3748;
+  --text-secondary: #718096;
+  --accent-color: #6A11CB;
+  --border-color: rgba(0, 0, 0, 0.06);
+  --shadow-color: rgba(0, 0, 0, 0.08);
+  --shadow-hover: rgba(0, 0, 0, 0.15);
+  --success-color: #4CAF50;
+  --error-color: #dc3545;
+}
+
+body {
+  font-family: 'Montserrat', sans-serif;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  color: var(--text-color);
+}
+
+.background-pattern {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: radial-gradient(circle, rgba(106, 17, 203, 0.05) 2px, transparent 2px);
+  background-size: 50px 50px;
+  z-index: -1;
+  opacity: 0.6;
+  animation: patternFloat 60s infinite linear;
+}
+
+@keyframes patternFloat {
+  0% { background-position: 0 0; }
+  100% { background-position: 100px 100px; }
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.lesson-container {
+  background: var(--card-bg);
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 8px 24px var(--shadow-color);
+  padding: 2rem;
+  backdrop-filter: blur(8px);
+}
+
+.lesson-header {
+  margin-bottom: 2rem;
+}
+
+.lesson-title {
+  font-size: 2rem;
+  font-weight: 700;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 0.5rem;
+}
+
+.lesson-meta {
+  display: flex;
+  gap: 1rem;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.lesson-description {
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.progress-container {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: var(--card-bg);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px var(--shadow-color);
+}
+
+.progress-bar {
+  height: 8px;
+  background: rgba(106, 17, 203, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--primary-gradient);
+  transition: width 0.5s ease;
+}
+
+.progress-text {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+.progress-value {
+  font-weight: 600;
+  color: var(--accent-color);
+}
+
+.lesson-navigation {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 1.5rem;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.nav-btn.prev-lesson {
+  background: rgba(106, 17, 203, 0.1);
+  color: var(--accent-color);
+}
+
+.nav-btn.next-lesson {
+  background: var(--primary-gradient);
+  color: white;
+}
+
+.nav-btn.main-btn {
+  background: var(--primary-gradient);
+  color: white;
+}
+
+.nav-btn.logout-btn {
+  background: transparent;
+  border: 1px solid var(--accent-color);
+  color: var(--accent-color);
+}
+
+.nav-btn.back-btn {
+  background: rgba(106, 17, 203, 0.1);
+  color: var(--accent-color);
+}
+
+.nav-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--shadow-hover);
+}
+
+.nav-btn.main-btn:hover, .nav-btn.next-lesson:hover {
+  background: var(--hover-gradient);
+}
+
+.nav-btn.logout-btn:hover {
+  background: var(--accent-color);
+  color: white;
+}
+
+.nav-btn.back-btn:hover {
+  background: var(--primary-gradient);
+  color: white;
+}
+
+.content-block {
+  position: relative;
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 12px var(--shadow-color);
+  transition: all 0.3s ease;
+}
+
+.content-block:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px var(--shadow-hover);
+}
+
+.block-number {
+  position: absolute;
+  top: -12px;
+  left: -12px;
+  width: 32px;
+  height: 32px;
+  background: var(--primary-gradient);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.block-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.block-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--accent-color);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.block-content {
+  line-height: 1.6;
+}
+
+.text-content, .pdf-content, .video-content, .quiz-content, .task-content, .open-content {
+  margin-top: 1rem;
+}
+
+.video-content iframe {
+  width: 100%;
+  height: 400px;
+  border-radius: 8px;
+  border: none;
+}
+
+.pdf-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--primary-gradient);
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.pdf-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--shadow-hover);
+}
+
+.quiz-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.quiz-option {
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.quiz-option:hover {
+  background: rgba(106, 17, 203, 0.05);
+}
+
+.quiz-option input[type="radio"] {
+  display: none;
+}
+
+.quiz-option label {
+  display: block;
+  padding-left: 2rem;
+  position: relative;
+  cursor: pointer;
+}
+
+.quiz-option label::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border-color);
+  border-radius: 50%;
+}
+
+.quiz-option input:checked + label::before {
+  background: var(--accent-color);
+  border-color: var(--accent-color);
+}
+
+.quiz-option.correct {
+  background: rgba(76, 175, 80, 0.1);
+  border-color: var(--success-color);
+}
+
+.quiz-option.incorrect {
+  background: rgba(220, 53, 69, 0.1);
+  border-color: var(--error-color);
+}
+
+.quiz-explanation {
+  display: none;
+  margin-top: 1rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.7);
+  border-left: 4px solid var(--accent-color);
+  border-radius: 0 8px 8px 0;
+}
+
+.task-answer-input, .open-answer-input {
+  width: 100%;
+  min-height: 100px;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  margin: 1rem 0;
+}
+
+.task-image {
+  max-width: 100%;
+  border-radius: 8px;
+  margin: 1rem 0;
+}
+
+.task-hint, .task-answer {
+  margin: 1rem 0;
+  padding: 1rem;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.task-hint {
+  border-left: 4px solid #FFBB00;
+}
+
+.task-answer {
+  border-left: 4px solid var(--success-color);
+}
+
+.toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--primary-gradient);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.toggle-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--shadow-hover);
+}
+
+.toggle-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.toggle-content.visible {
+  max-height: 500px;
+}
+
+.check-answer-btn, .save-answer-btn, .grading-submit {
+  padding: 0.75rem 1.5rem;
+  background: var(--primary-gradient);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  margin: 0.5rem;
+}
+
+.check-answer-btn:hover, .save-answer-btn:hover, .grading-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--shadow-hover);
+}
+
+.answer-saved {
+  display: none;
+  color: var(--success-color);
+  font-size: 0.9rem;
+  margin: 0.5rem 0;
+}
+
+.grading-section {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  background: var(--card-bg);
+  border-radius: 8px;
+}
+
+.grading-criteria {
+  margin-bottom: 1rem;
+}
+
+.grading-input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+}
+
+.open-criteria {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: rgba(106, 17, 203, 0.05);
+  border-radius: 8px;
+}
+
+.criteria-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.criteria-item:last-child {
+  border-bottom: none;
+}
+
+.image-error {
+  background: #f8f9fa;
+  border: 2px dashed #dee2e6;
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+  color: #6c757d;
+}
+
+@media (max-width: 768px) {
+  .container { padding: 1rem; }
+  .lesson-container { padding: 1.5rem; }
+  .lesson-title { font-size: 1.5rem; }
+  .video-content iframe { height: 200px; }
+  .lesson-navigation {
+    flex-direction: column;
+    align-items: center;
+  }
+  .nav-btn {
+    width: 100%;
+    max-width: 300px;
+    text-align: center;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+<div class="container">
+  <div class="lesson-container">
+    <div class="lesson-header">
+      <h1 class="lesson-title">{{ lesson.title }}</h1>
+      <div class="lesson-meta">
+        <span><i class="fas fa-book"></i> Тема: {{ lesson.topic.title }}</span>
+        <span><i class="fas fa-clock"></i> Время: {{ lesson.estimated_time }} мин</span>
+      </div>
+      <p class="lesson-description">{{ lesson.description }}</p>
+    </div>
+
+    <div class="lesson-navigation">
+      {% if previous_lesson %}
+        <a href="{% url 'lesson_detail' previous_lesson.id %}" class="nav-btn prev-lesson">
+          <i class="fas fa-arrow-left"></i> Предыдущий урок
+        </a>
+      {% endif %}
+      {% if next_lesson %}
+        <a href="{% url 'lesson_detail' next_lesson.id %}" class="nav-btn next-lesson">
+          Следующий урок <i class="fas fa-arrow-right"></i>
+        </a>
+      {% endif %}
+      <a href="{% url 'page' %}" class="nav-btn main-btn">
+        <i class="fas fa-home"></i> На главную
+      </a>
+      <a href="javascript:history.back()" class="nav-btn back-btn">
+        <i class="fas fa-arrow-left"></i> Назад
+      </a>
+      {% if user.is_authenticated %}
+        <a href="{% url 'logout' %}" class="nav-btn logout-btn">
+          <i class="fas fa-sign-out-alt"></i> Выйти
+        </a>
+      {% endif %}
+    </div>
+
+    <div class="lesson-content">
+      {% for block in contents %}
+        <div class="content-block block-{{ block.content_type }}" style="animation: fadeIn 0.5s ease-out">
+          <div class="block-number">{{ forloop.counter }}</div>
+          <div class="block-header">
+            <div class="block-title">
+              {% if block.content_type == 'text' %}
+                <i class="fas fa-align-left"></i> Текст
+              {% elif block.content_type == 'pdf' %}
+                <i class="far fa-file-pdf"></i> PDF
+              {% elif block.content_type == 'video' %}
+                <i class="fas fa-video"></i> Видео
+              {% elif block.content_type == 'quiz' %}
+                <i class="fas fa-question-circle"></i> Тест
+              {% elif block.content_type == 'task' %}
+                <i class="fas fa-tasks"></i> Задача
+              {% elif block.content_type == 'open' %}
+                <i class="fas fa-edit"></i> Открытый вопрос
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="block-content">
+            {% if block.content_type == 'text' %}
+              <div class="text-content">{{ block.text|safe }}</div>
+            {% elif block.content_type == 'pdf' %}
+              <div class="pdf-content">
+                <h3>{{ block.pdf_title }}</h3>
+                <a href="{{ block.pdf_file.url }}" class="pdf-link" target="_blank">
+                  <i class="far fa-file-pdf"></i> Открыть PDF
+                </a>
+              </div>
+            {% elif block.content_type == 'video' %}
+              <div class="video-content">
+                <h3>{{ block.video_title }}</h3>
+                {% if block.video_description %}
+                  <p>{{ block.video_description }}</p>
+                {% endif %}
+                {% if block.video_url %}
+                  <iframe src="{{ block.video_url|youtube_embed_url }}" allowfullscreen></iframe>
+                {% endif %}
+              </div>
+            {% elif block.content_type == 'quiz' %}
+              <div class="quiz-content" data-block-id="{{ block.id }}">
+                <h3>{{ block.quiz_title }}</h3>
+                <p>{{ block.quiz_question }}</p>
+                <form class="quiz-options">
+                  {% for option in block.quiz_options %}
+                    <div class="quiz-option" data-correct="{% if option == block.quiz_correct_answer %}true{% else %}false{% endif %}">
+                      <input type="radio" name="quiz-{{ block.id }}" id="quiz-{{ block.id }}-{{ forloop.counter }}" value="{{ option }}">
+                      <label for="quiz-{{ block.id }}-{{ forloop.counter }}">{{ option }}</label>
+                    </div>
+                  {% endfor %}
+                </form>
+                <button class="check-answer-btn">Проверить</button>
+                <button class="save-answer-btn" style="display: none;">Сохранить</button>
+                {% if block.quiz_explanation %}
+                  <div class="quiz-explanation">{{ block.quiz_explanation }}</div>
+                {% endif %}
+              </div>
+            {% elif block.content_type == 'task' %}
+              <div class="task-content" data-block-id="{{ block.id }}">
+                <h3>{{ block.task_title }}</h3>
+                <p>{{ block.task_description|safe }}</p>
+                {% if block.task_image %}
+                  <div class="image-container">
+                    <img src="{{ block.task_image.url|strip_media_prefix }}"
+                         alt="{{ block.task_image_description|default:'Task image' }}"
+                         class="task-image"
+                         onerror="this.src='{% static 'images/default-task-image.png' %}';">
+                    <!-- Debug output for image path -->
+                    <p class="debug-path" style="font-size: 0.8rem; color: #6c757d; margin-top: 0.5rem;">
+                      Debug: Image URL: <span>{{ block.task_image.url|strip_media_prefix }}</span>
+                    </p>
+                  </div>
+                {% endif %}
+                <textarea class="task-answer-input" placeholder="Введите ответ..."></textarea>
+                <button class="check-answer-btn" data-correct-answer="{{ block.task_correct_answer }}">Проверить</button>
+                <div class="answer-feedback"></div>
+                {% if block.task_hint %}
+                  <div class="task-hint">
+                    <button class="toggle-btn">Показать подсказку</button>
+                    <div class="toggle-content">{{ block.task_hint|safe }}</div>
+                  </div>
+                {% endif %}
+                {% if block.task_correct_answer %}
+                  <div class="task-answer">
+                    <button class="toggle-btn">Показать решение</button>
+                    <div class="toggle-content">{{ block.task_correct_answer|safe }}</div>
+                  </div>
+                {% endif %}
+              </div>
+            {% elif block.content_type == 'open' %}
+              <div class="open-content" data-block-id="{{ block.id }}">
+                <h3>{{ block.open_title }}</h3>
+                <p>{{ block.open_description|safe }}</p>
+                {% if block.open_image %}
+                  <img src="{{ block.open_image.url|strip_media_prefix }}" alt="Open question image" class="task-image" onerror="this.src='{% static 'images/default-task-image.png' %}'">
+                {% endif %}
+                <textarea class="open-answer-input" placeholder="Введите ответ...">{{ user_answer|default:'' }}</textarea>
+                <button class="save-answer-btn">Сохранить</button>
+                <div class="answer-saved"></div>
+                {% if block.open_criteria %}
+                  <div class="open-criteria">
+                    <h4>Критерии оценки:</h4>
+                    {% for criterion in block.open_criteria %}
+                      <div class="criteria-item">
+                        <span>{{ criterion.criterion }}</span>
+                        <span>{{ criterion.points }} баллов</span>
+                      </div>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+                {% if is_teacher and user_answer %}
+                  <div class="grading-section">
+                    <h4>Оценка ответа</h4>
+                    <form class="grading-form">
+                      {% for criterion in block.open_criteria %}
+                        <div class="grading-criteria">
+                          <label>{{ criterion.criterion }} (макс. {{ criterion.points }})</label>
+                          <input type="number" class="grading-input" min="0" max="{{ criterion.points }}" data-criterion-id="{{ criterion.id }}" value="{{ criterion.score|default:0 }}">
+                        </div>
+                      {% endfor %}
+                      <button type="button" class="grading-submit">Сохранить оценку</button>
+                    </form>
+                  </div>
+                {% endif %}
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      {% empty %}
+        <p>Контент урока отсутствует.</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // Progress bar
+  const progressFill = document.querySelector('.progress-fill');
+  if (progressFill) {
+    progressFill.style.width = `${progressFill.dataset.progress}%`;
+  }
+
+  // Toggle content
+  document.querySelectorAll('.toggle-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const content = btn.nextElementSibling;
+      content.classList.toggle('visible');
+      btn.textContent = content.classList.contains('visible') ? 'Скрыть' : btn.textContent.includes('Подсказку') ? 'Показать подсказку' : 'Показать решение';
+    });
+  });
+
+  // Quiz handling
+  document.querySelectorAll('.check-answer-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const quiz = btn.closest('.quiz-content');
+      const options = quiz.querySelectorAll('.quiz-option');
+      const selected = quiz.querySelector('input:checked');
+      const explanation = quiz.querySelector('.quiz-explanation');
+      const saveBtn = quiz.querySelector('.save-answer-btn');
+
+      if (!selected) {
+        alert('Выберите вариант ответа.');
+        return;
+      }
+
+      options.forEach(opt => {
+        const input = opt.querySelector('input');
+        if (input.checked) {
+          opt.classList.add(opt.dataset.correct === 'true' ? 'correct' : 'incorrect');
+        }
+        if (opt.dataset.correct === 'true') {
+          opt.classList.add('correct');
+        }
+        input.disabled = true;
+      });
+
+      btn.style.display = 'none';
+      saveBtn.style.display = 'block';
+      if (explanation) explanation.style.display = 'block';
+    });
+  });
+
+  // Task answer checking
+  document.querySelectorAll('.check-answer-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const task = btn.closest('.task-content');
+      const input = task.querySelector('.task-answer-input');
+      const feedback = task.querySelector('.answer-feedback');
+      const correct = btn.dataset.correctAnswer.toLowerCase().trim();
+      const userAnswer = input.value.toLowerCase().trim();
+
+      feedback.textContent = userAnswer === correct ? 'Правильно!' : 'Неправильно.';
+      feedback.style.color = userAnswer === correct ? 'var(--success-color)' : 'var(--error-color)';
+    });
+  });
+
+  // Answer saving
+  document.querySelectorAll('.save-answer-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const block = btn.closest('[data-block-id]');
+      const blockId = block.dataset.blockId;
+      const type = block.classList.contains('quiz-content') ? 'quiz' :
+                   block.classList.contains('task-content') ? 'task' : 'open';
+      const answer = type === 'quiz' ?
+        block.querySelector('input:checked')?.value :
+        block.querySelector('textarea').value;
+
+      if (!answer) {
+        alert('Введите или выберите ответ.');
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/save-answer/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+          },
+          body: JSON.stringify({ block_id: blockId, block_type: type, answer })
+        });
+        const data = await response.json();
+        if (data.success) {
+          const saved = block.querySelector('.answer-saved');
+          saved.textContent = 'Ответ сохранён.';
+          saved.style.display = 'block';
+          setTimeout(() => saved.style.display = 'none', 3000);
+          if (data.progress) {
+            document.querySelector('.progress-fill').style.width = `${data.progress}%`;
+            document.querySelector('.progress-value').textContent = data.progress;
+          }
+        } else {
+          alert('Ошибка сохранения ответа.');
+        }
+      } catch (error) {
+        console.error('Save answer error:', error);
+        alert('Ошибка сервера.');
+      }
+    });
+  });
+
+  // Grading
+  document.querySelectorAll('.grading-submit').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const form = btn.closest('.grading-form');
+      const blockId = btn.closest('[data-block-id]').dataset.blockId;
+      const inputs = form.querySelectorAll('.grading-input');
+      const grades = Array.from(inputs).map(input => ({
+        criterion_id: input.dataset.criterionId,
+        score: parseInt(input.value) || 0
+      }));
+
+      try {
+        const response = await fetch('/api/save-grades/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+          },
+          body: JSON.stringify({ block_id: blockId, grades })
+        });
+        const data = await response.json();
+        if (data.success) {
+          const saved = document.createElement('div');
+          saved.className = 'answer-saved';
+          saved.textContent = 'Оценка сохранена.';
+          form.appendChild(saved);
+          setTimeout(() => saved.remove(), 3000);
+        } else {
+          alert('Ошибка сохранения оценки.');
+        }
+      } catch (error) {
+        console.error('Save grades error:', error);
+        alert('Ошибка сервера.');
+      }
+    });
+  });
+});
+</script>

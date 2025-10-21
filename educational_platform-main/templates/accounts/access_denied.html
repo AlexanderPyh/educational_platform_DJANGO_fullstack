@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="text-center">Доступ запрещен</h3>
+                </div>
+                <div class="card-body">
+                    <p class="text-center">У вас нет прав для доступа к этой странице. Необходимы права редактора или администратора.</p>
+                    <div class="text-center mt-3">
+                        <a href="{% url 'course_list_superuser' %}" class="btn btn-primary">Вернуться к списку курсов</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

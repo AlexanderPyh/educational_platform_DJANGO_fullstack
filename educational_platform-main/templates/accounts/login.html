@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Мульти | Вход в систему</title>
+  {% load static %}
+
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+</head>
+
+<style>
+
+:root {
+  --primary-gradient: linear-gradient(135deg, #6A11CB 0%, #2575FC 100%);
+  --secondary-gradient: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+  --success-gradient: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%);
+  --support-gradient: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+}
+
+/* Сброс стилей и базовые настройки */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Montserrat', sans-serif;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: 100vh;
+  perspective: 1000px;
+  scroll-behavior: smooth;
+  padding-top: 10px;
+  overflow-x: hidden;
+}
+
+/* Анимация градиента */
+.animated-gradient {
+  background-size: 400% 400%;
+  animation: gradientAnimation 10s ease infinite;
+}
+
+@keyframes gradientAnimation {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* 3D-эффект для кнопок */
+.button-3d {
+  transform-style: preserve-3d;
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.button-3d:hover {
+  transform: translate3d(0, -4px, 10px) rotateX(15deg);
+  box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* Эффект ховера для карточки */
+.card-hover-effect {
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.card-hover-effect:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* Фоновые фигуры */
+.background-shapes {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.shape {
+  position: absolute;
+  background: rgba(106, 17, 203, 0.1);
+  border-radius: 50%;
+  filter: blur(40px);
+  animation: float 15s infinite ease-in-out;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+/* Поля ввода */
+.input-field {
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  width: 100%;
+  padding: 0.5rem 1rem;
+  border-radius: 0.75rem;
+}
+
+.input-field:focus {
+  border-color: #6A11CB;
+  box-shadow: 0 0 0 4px rgba(106, 17, 203, 0.1);
+  outline: none;
+}
+
+/* Карточка логина */
+.login-card {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 20px;
+  border-radius: 1.5rem;
+}
+
+/* Кнопка и чат поддержки */
+.support-button {
+  position: fixed;
+  right: 30px;
+  bottom: 30px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--support-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 16px rgba(245, 124, 0, 0.4);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.support-button:hover {
+  transform: scale(1.1);
+}
+
+.support-chat {
+  position: fixed;
+  right: 30px;
+  bottom: 100px;
+  width: 350px;
+  height: 450px;
+  background-color: white;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  z-index: 999;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  opacity: 0;
+  transform: translateY(20px) scale(0.9);
+  pointer-events: none;
+}
+
+.support-chat.active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: all;
+}
+
+.chat-header {
+  background: var(--support-gradient);
+  padding: 15px 20px;
+  color: white;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chat-messages {
+  padding: 20px;
+  height: 320px;
+  overflow-y: auto;
+}
+
+.chat-input {
+  display: flex;
+  padding: 10px 20px;
+  border-top: 1px solid #eee;
+}
+
+.message {
+  margin-bottom: 15px;
+  max-width: 80%;
+  padding: 12px 15px;
+  border-radius: 18px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.message.received {
+  background-color: #f1f1f1;
+  border-bottom-left-radius: 5px;
+  align-self: flex-start;
+}
+
+.message.sent {
+  background: var(--secondary-gradient);
+  color: white;
+  border-bottom-right-radius: 5px;
+  align-self: flex-end;
+  margin-left: auto;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+/* Пульсация кнопки поддержки */
+.pulse-animation {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(245, 124, 0, 0.6); }
+  70% { box-shadow: 0 0 0 15px rgba(245, 124, 0, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(245, 124, 0, 0); }
+}
+
+/* Плейсхолдеры */
+::placeholder {
+  font-weight: 600;
+  color: #9ca3af;
+}
+
+/* Логотип */
+.logo-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.logo-container {
+  display: inline-block;
+  padding: 8px 30px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 16px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.logo-text {
+  font-size: 2.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #6A11CB 0%, #2575FC 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+  line-height: 1.2;
+  letter-spacing: 0;
+  margin: 0;
+  padding: 0 5px;
+  position: relative;
+}
+
+/* Контейнер */
+.container {
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
+}
+
+/* Модификации Tailwind */
+.mb-6 {
+  margin-bottom: 1rem !important;
+}
+
+.mb-8 {
+  margin-bottom: 1.5rem !important;
+}
+
+.mb-4 {
+  margin-bottom: 0.75rem !important;
+}
+
+h2.text-3xl {
+  font-size: 1.75rem !important;
+  margin-bottom: 1.25rem !important;
+}
+
+button[type="submit"] {
+  padding-top: 0.75rem !important;
+  padding-bottom: 0.75rem !important;
+}
+
+.mt-8 {
+  margin-top: 1.5rem !important;
+}
+
+.pt-6 {
+  padding-top: 1rem !important;
+}
+
+/* Кнопка "Назад" */
+.back-button {
+  position: fixed;
+  top: 1.5rem;
+  left: 1.5rem;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, #6A11CB, #2575FC);
+  color: white;
+  border-radius: 0.75rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  z-index: 50;
+}
+
+.back-button:hover {
+  background: linear-gradient(135deg, #7B1CDA, #3686FD);
+  transform: translateY(-2px);
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  /* Контейнер */
+  .container {
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+    padding-top: 5px !important;
+    padding-bottom: 5px !important;
+  }
+
+  /* Логотип */
+  .logo-text {
+    font-size: 1.8rem;
+  }
+
+  .logo-container {
+    padding: 6px 20px;
+    border-radius: 12px;
+  }
+
+  .logo-wrapper {
+    margin-bottom: 15px;
+  }
+
+  /* Карточка логина */
+  .login-card {
+    padding: 15px !important;
+    border-radius: 1rem;
+  }
+
+  .max-w-md {
+    max-width: 90%;
+  }
+
+  /* Заголовок */
+  h2.text-3xl {
+    font-size: 1.5rem !important;
+    margin-bottom: 1rem !important;
+  }
+
+  /* Поля ввода */
+  .input-field {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
+  }
+
+  /* Метки */
+  label {
+    font-size: 0.9rem !important;
+  }
+
+  /* Кнопка входа */
+  button[type="submit"] {
+    padding: 0.6rem !important;
+    font-size: 0.9rem;
+  }
+
+  /* Ссылки */
+  .text-sm {
+    font-size: 0.8rem !important;
+  }
+
+  /* Кнопка "Назад" */
+  .back-button {
+    top: 1rem;
+    left: 1rem;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+    border-radius: 0.5rem;
+  }
+
+  /* Кнопка и чат поддержки */
+  .support-button {
+    width: 50px;
+    height: 50px;
+    right: 20px;
+    bottom: 20px;
+  }
+
+  .support-button svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .support-chat {
+    width: 280px;
+    height: 360px;
+    right: 20px;
+    bottom: 80px;
+    border-radius: 15px;
+  }
+
+  .chat-header {
+    padding: 10px 15px;
+    font-size: 0.9rem;
+  }
+
+  .chat-messages {
+    padding: 15px;
+    height: 260px;
+  }
+
+  .chat-input {
+    padding: 8px 15px;
+  }
+
+  .message {
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+
+  .chat-input input {
+    font-size: 0.8rem;
+    padding: 8px 12px;
+  }
+
+  .chat-input button {
+    padding: 8px;
+  }
+
+  .chat-input button svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* Фоновые фигуры */
+  .shape:nth-child(1) {
+    width: 200px;
+    height: 200px;
+    top: -50px;
+    left: -50px;
+  }
+
+  .shape:nth-child(2) {
+    width: 150px;
+    height: 150px;
+    bottom: -30px;
+    right: -30px;
+  }
+
+  .shape:nth-child(3) {
+    width: 100px;
+    height: 100px;
+    top: 50%;
+    left: 70%;
+  }
+
+  /* Ошибки и сообщения */
+  .text-red-600 {
+    font-size: 0.8rem;
+  }
+}
+
+@media (min-width: 769px) {
+  /* Контейнер */
+  .container {
+    padding-top: 20px !important;
+    padding-bottom: 20px !important;
+  }
+
+  /* Карточка логина */
+  .login-card {
+    padding: 30px !important;
+    max-width: 450px;
+  }
+
+  /* Логотип */
+  .logo-text {
+    font-size: 3rem;
+  }
+
+  /* Кнопка и чат поддержки */
+  .support-chat {
+    width: 400px;
+    height: 500px;
+  }
+
+  .chat-messages {
+    height: 360px;
+  }
+
+  /* Фоновые фигуры */
+  .shape:nth-child(1) {
+    width: 350px;
+    height: 350px;
+  }
+
+  .shape:nth-child(2) {
+    width: 250px;
+    height: 250px;
+  }
+
+  .shape:nth-child(3) {
+    width: 200px;
+    height: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Контейнер */
+  .container {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+
+  /* Логотип */
+  .logo-text {
+    font-size: 1.5rem;
+  }
+
+  .logo-container {
+    padding: 5px 15px;
+    border-radius: 10px;
+  }
+
+  /* Карточка логина */
+  .login-card {
+    padding: 12px !important;
+  }
+
+  /* Заголовок */
+  h2.text-3xl {
+    font-size: 1.25rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+
+  /* Поля ввода */
+  .input-field {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.85rem;
+  }
+
+  /* Кнопка входа */
+  button[type="submit"] {
+    padding: 0.5rem !important;
+    font-size: 0.85rem;
+  }
+
+  /* Кнопка "Назад" */
+  .back-button {
+    top: 0.75rem;
+    left: 0.75rem;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.75rem;
+  }
+
+  /* Чат поддержки */
+  .support-chat {
+    width: 250px;
+    height: 320px;
+  }
+
+  .chat-messages {
+    height: 220px;
+  }
+
+  .support-button {
+    width: 45px;
+    height: 45px;
+  }
+}
+</style>
+<body class="relative overflow-hidden">
+  <div class="background-shapes">
+    <div class="shape" style="width: 300px; height: 300px; top: -100px; left: -100px;"></div>
+    <div class="shape" style="width: 200px; height: 200px; bottom: -50px; right: -50px;"></div>
+    <div class="shape" style="width: 150px; height: 150px; top: 40%; left: 60%;"></div>
+  </div>
+
+<button
+  onclick="window.location.href = '{% url 'page' %}'"
+  class="fixed top-6 left-7 px-4 py-2 bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-xl shadow-md hover:from-purple-600 hover:to-indigo-700 transition-all duration-300 ease-in-out text-sm sm:text-base font-semibold z-50">
+   Назад
+</button>
+
+
+
+
+  <div class="container mx-auto px-4 py-16 md:py-24">
+    <div class="logo-wrapper">
+      <div clasдs="logo-container">
+        <h1 class="logo-text">Multy</h1>
+      </div>
+    </div>
+
+    <div class="max-w-md mx-auto">
+      <div class="login-card rounded-3xl shadow-xl p-8 md:p-10 card-hover-effect">
+        <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">Вход в систему</h2>
+
+        {% if messages %}
+  <ul class="mb-4">
+    {% for message in messages %}
+      <li class="text-red-600 font-medium">{{ message }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
+
+
+          <form method="post" action="{% url 'login' %}">
+  {% csrf_token %}
+  {% if form.errors %}
+    <ul class="mb-4 text-red-600">
+      {% for field in form %}
+        {% for error in field.errors %}
+          <li>{{ error }}</li>
+        {% endfor %}
+      {% endfor %}
+      {% for error in form.non_field_errors %}
+        <li>{{ error }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  <div class="mb-6">
+    <label for="{{ form.username.id_for_label }}" class="block text-gray-800 font-bold mb-2 text-lg">Email</label>
+    {{ form.username }}
+  </div>
+
+  <div class="mb-4">
+    <label for="{{ form.password.id_for_label }}" class="block text-gray-800 font-bold mb-2 text-lg">Пароль</label>
+    {{ form.password }}
+  </div>
+
+  <div class="flex justify-end mb-6">
+    <a href="{% url 'login_again' %}" class="text-blue-600 hover:text-blue-800 text-sm font-semibold">Забыли пароль?</a>
+  </div>
+
+  <button
+    type="submit"
+    class="button-3d w-full py-4 bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl text-white text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
+  >
+    Войти
+  </button>
+</form>
+
+        
+        <div class="mt-8 text-center">
+          <p class="text-gray-600">Еще нет аккаунта?</p>
+          <a href="{% url 'register' %}" class="text-blue-600 hover:text-blue-800 font-medium">Зарегистрироваться</a>
+        </div>
+        
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Support Button -->
+  <div class="support-button pulse-animation" id="supportButton">
+    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
+    </svg>
+  </div>
+
+  <!-- Support Chat -->
+  <div class="support-chat" id="supportChat">
+    <div class="chat-header">
+      <span>Поддержка Учи.ру</span>
+      <button class="close-button" id="closeChat">&times;</button>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+      <div class="message received">
+        Здравствуйте! Чем я могу вам помочь?
+      </div>
+    </div>
+    <div class="chat-input">
+      <input 
+        type="text" 
+        placeholder="Напишите сообщение..." 
+        class="w-full px-4 py-2 rounded-full bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        id="messageInput"
+      >
+      <button 
+        class="ml-2 p-2 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full text-white"
+        id="sendMessage"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // Support chat functionality
+    const supportButton = document.getElementById('supportButton');
+    const supportChat = document.getElementById('supportChat');
+    const closeChat = document.getElementById('closeChat');
+    const chatMessages = document.getElementById('chatMessages');
+    const messageInput = document.getElementById('messageInput');
+    const sendMessage = document.getElementById('sendMessage');
+
+    supportButton.addEventListener('click', () => {
+      supportChat.classList.add('active');
+      supportButton.classList.remove('pulse-animation');
+    });
+
+    closeChat.addEventListener('click', () => {
+      supportChat.classList.remove('active');
+    });
+
+    const sendUserMessage = () => {
+      const message = messageInput.value.trim();
+      if (message) {
+        // Add user message
+        const userMessage = document.createElement('div');
+        userMessage.classList.add('message', 'sent');
+        userMessage.textContent = message;
+        chatMessages.appendChild(userMessage);
+        
+        // Clear input
+        messageInput.value = '';
+        
+        // Auto-scroll to bottom
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        
+        // Simulate response after delay
+        setTimeout(() => {
+          const botMessage = document.createElement('div');
+          botMessage.classList.add('message', 'received');
+          botMessage.textContent = "Спасибо за ваше сообщение! Наш специалист скоро свяжется с вами.";
+          chatMessages.appendChild(botMessage);
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+        }, 1000);
+      }
+    };
+
+    sendMessage.addEventListener('click', sendUserMessage);
+    
+    messageInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        sendUserMessage();
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,2737 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Редактор содержимого урока</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+:root {
+  --primary-gradient: linear-gradient(135deg, #6A11CB 0%, #2575FC 100%);
+  --hover-gradient: linear-gradient(135deg, #2575FC 0%, #6A11CB 100%);
+  --card-gradient-1: linear-gradient(135deg, rgba(33, 150, 243, 0.1) 0%, rgba(33, 150, 243, 0.02) 100%);
+  --card-gradient-2: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(76, 175, 80, 0.02) 100%);
+  --card-gradient-3: linear-gradient(135deg, rgba(106, 17, 203, 0.1) 0%, rgba(106, 17, 203, 0.02) 100%);
+  --token-bg: #FFBB00;
+  --token-text: #333333;
+  --bg-color: #F8F9FD;
+  --bg-card: rgba(255, 255, 255, 0.85);
+  --text-color: #2D3748;
+  --text-secondary: #718096;
+  --sidebar-hover: rgba(106, 17, 203, 0.08);
+  --border-color: rgba(0, 0, 0, 0.06);
+  --shadow-color: rgba(0, 0, 0, 0.08);
+  --shadow-hover: rgba(0, 0, 0, 0.15);
+  --accent-color: #6A11CB;
+  --success-color: #48BB78;
+  --error-color: #E53E3E;
+  --warning-color: #F6AD55;
+  --info-color: #4299E1;
+}
+
+body {
+  font-family: 'Montserrat', sans-serif;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  min-height: 100vh;
+  perspective: 1000px;
+  margin: 0;
+  padding: 0;
+  color: var(--text-color);
+}
+
+.background-pattern {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image:
+    radial-gradient(circle at 25% 25%, rgba(106, 17, 203, 0.05) 0%, transparent 15%),
+    radial-gradient(circle at 75% 75%, rgba(37, 117, 252, 0.05) 0%, transparent 15%),
+    radial-gradient(circle at 50% 50%, rgba(76, 175, 80, 0.03) 0%, transparent 20%);
+  background-size: 100px 100px, 120px 120px, 150px 150px;
+  background-position: 0 0, 50px 50px, 25px 25px;
+  z-index: -1;
+  opacity: 0.8;
+  animation: patternFloat 120s infinite linear;
+}
+
+@keyframes patternFloat {
+  0% { background-position: 0 0, 50px 50px, 25px 25px; }
+  100% { background-position: 100px 100px, 150px 150px, 125px 125px; }
+}
+
+.header {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 16px 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  position: sticky;
+  top: 0;
+  z-index: 90;
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.header-logo {
+  font-weight: 800;
+  font-size: 22px;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  letter-spacing: -0.5px;
+  transition: transform 0.3s ease;
+}
+
+.header-logo:hover {
+  transform: scale(1.05);
+}
+
+.header div[style="color:#ff0000;"] {
+  color: #ff0000;
+  font-weight: 600;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  text-decoration: none;
+  color: var(--text-color);
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border-radius: 30px;
+  margin: 16px 0;
+  width: fit-content;
+  cursor: pointer;
+}
+
+.back-button:hover {
+  background: var(--sidebar-hover);
+  transform: translateX(-5px);
+}
+
+.back-button i {
+  transition: transform 0.3s ease;
+}
+
+.back-button:hover i {
+  transform: translateX(-3px);
+}
+
+.content-editor {
+  display: flex;
+  gap: 24px;
+}
+
+.lessons-sidebar {
+  width: 300px;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  height: fit-content;
+  position: sticky;
+  top: 90px;
+}
+
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.sidebar-title {
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: var(--text-color);
+}
+
+.lesson-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.lesson-item {
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 12px;
+  padding: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  position: relative;
+}
+
+.lesson-item:hover {
+  background: rgba(255, 255, 255, 0.8);
+  transform: translateX(5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.lesson-item.active {
+  background: rgba(106, 17, 203, 0.08);
+  border-left: 3px solid #6A11CB;
+}
+
+.lesson-item.completed {
+  border-left: 3px solid var(--success-color);
+}
+
+.lesson-item.completed::after {
+  content: '\f058';
+  font-family: 'Font Awesome 5 Free';
+  font-weight: 900;
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  color: var(--success-color);
+}
+
+.lesson-number {
+  font-weight: 600;
+  color: #6A11CB;
+  font-size: 0.9rem;
+}
+
+.lesson-title {
+  margin-top: 5px;
+  font-weight: 500;
+}
+
+.lesson-price {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.editor-panel {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.editor-title {
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: var(--text-color);
+  display: flex;
+  flex-direction: column;
+}
+
+.editor-subtitle {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-top: 5px;
+  font-weight: 500;
+}
+
+.content-blocks {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.content-block {
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  position: relative;
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.content-block:hover {
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.content-block.preview-mode {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  transform: translateY(-5px);
+  transition: all 0.3s ease;
+}
+
+.block-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.block-title {
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.block-title-text {
+  font-size: 1.25rem;
+  color: var(--text-color);
+  margin-bottom: 12px;
+}
+
+.block-content-text {
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.block-content-text p {
+  margin-bottom: 15px;
+  line-height: 1.6;
+}
+
+.block-type-badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  background: var(--card-gradient-1);
+}
+
+.block-type-badge.text {
+  background: rgba(66, 153, 225, 0.15);
+  color: #3182CE;
+}
+
+.block-type-badge.pdf {
+  background: rgba(237, 100, 166, 0.15);
+  color: #D53F8C;
+}
+
+.block-type-badge.video {
+  background: rgba(237, 137, 54, 0.15);
+  color: #DD6B20;
+}
+
+.block-type-badge.test {
+  background: rgba(72, 187, 120, 0.15);
+  color: #38A169;
+}
+
+.block-type-badge.task {
+  background: rgba(106, 17, 203, 0.15);
+  color: #6A11CB;
+}
+
+.block-actions {
+  display: flex;
+  gap: 5px;
+}
+
+.block-action-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: rgba(0, 0, 0, 0.05);
+  color: #555;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: all 0.3s ease;
+}
+
+.block-action-btn:hover {
+  background: rgba(0, 0, 0, 0.1);
+  transform: scale(1.1);
+}
+
+.block-action-btn.delete:hover {
+  background: rgba(220, 53, 69, 0.2);
+  color: #dc3545;
+}
+
+.block-action-btn.move-up:hover, .block-action-btn.move-down:hover {
+  background: rgba(66, 153, 225, 0.2);
+  color: #4299E1;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.form-control {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  font-family: 'Montserrat', sans-serif;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: #6A11CB;
+  box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.1);
+}
+
+.form-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23718096' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
+  padding-right: 40px;
+}
+
+textarea.form-control {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.file-upload-container {
+  border: 2px dashed rgba(106, 17, 203, 0.3);
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+}
+
+.file-upload-container:hover {
+  border-color: #6A11CB;
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.file-upload-icon {
+  font-size: 2rem;
+  color: rgba(106, 17, 203, 0.5);
+  margin-bottom: 10px;
+}
+
+.file-upload-text {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.file-upload-info {
+  margin-top: 10px;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.file-preview {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px;
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 8px;
+}
+
+.file-preview-icon {
+  font-size: 2rem;
+  color: #D53F8C;
+}
+
+.file-preview-info {
+  flex: 1;
+}
+
+.file-preview-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.file-preview-size {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.file-preview-remove {
+  color: #E53E3E;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.file-preview-remove:hover {
+  transform: scale(1.1);
+}
+
+.video-preview {
+  margin-top: 15px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.video-preview iframe {
+  width: 100%;
+  height: 315px;
+  border: none;
+  border-radius: 8px;
+}
+
+.test-options {
+  margin-top: 15px;
+}
+
+.test-question {
+  font-size: 1.1rem;
+  font-weight: 500;
+  line-height: 1.5;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 8px;
+}
+
+.test-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  margin-bottom: 10px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.test-option:hover {
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.test-option-radio {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--accent-color);
+}
+
+.test-option-label {
+  flex: 1;
+  cursor: pointer;
+}
+
+.test-option-text {
+  flex: 1;
+}
+
+.test-option-remove {
+  color: #E53E3E;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.test-option-remove:hover {
+  transform: scale(1.1);
+}
+
+.test-result {
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  font-weight: 500;
+}
+
+.test-result.correct {
+  background: rgba(72, 187, 120, 0.15);
+  color: #2F855A;
+}
+
+.test-result.incorrect {
+  background: rgba(229, 62, 62, 0.15);
+  color: #C53030;
+}
+
+.task-description {
+  line-height: 1.6;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 8px;
+}
+
+.task-image-container {
+  margin: 15px 0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.task-image {
+  max-width: 100%;
+  display: block;
+}
+
+.task-image-description {
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.05);
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.task-answer-input-group {
+  display: flex;
+  gap: 10px;
+}
+
+.task-answer-input {
+  flex: 1;
+}
+
+.task-answer-result {
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.task-answer-result.correct {
+  background: rgba(72, 187, 120, 0.1);
+  color: #2F855A;
+}
+
+.task-answer-result.incorrect {
+  background: rgba(229, 62, 62, 0.1);
+  color: #C53030;
+}
+
+.task-hint {
+  margin-bottom: 15px;
+}
+
+.add-option-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 15px;
+  border-radius: 8px;
+  background: rgba(106, 17, 203, 0.1);
+  color: var(--accent-color);
+  border: 1px dashed rgba(106, 17, 203, 0.3);
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+}
+
+.add-option-btn:hover {
+  background: rgba(106, 17, 203, 0.15);
+  transform: scale(1.02);
+}
+
+.add-block-container {
+  margin-top: 30px;
+  text-align: center;
+}
+
+.add-block-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 20px;
+  border-radius: 50px;
+  background: rgba(106, 17, 203, 0.1);
+  color: var(--accent-color);
+  border: 1px dashed rgba(106, 17, 203, 0.3);
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.add-block-btn:hover {
+  background: rgba(106, 17, 203, 0.15);
+  transform: scale(1.05);
+}
+
+.add-block-btn i {
+  font-size: 1.2rem;
+}
+
+.btn-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color);
+}
+
+.btn {
+  position: relative;
+  padding: 0.75rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 50px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: all 0.6s ease;
+}
+
+.btn-sm {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+}
+
+.btn-primary {
+  color: white;
+  background: var(--primary-gradient);
+  box-shadow: 0 10px 25px rgba(106, 17, 203, 0.3);
+}
+
+.btn-primary:hover {
+  transform: scale(1.05) rotateX(5deg) rotateY(-5deg);
+  box-shadow: 0 15px 35px rgba(106, 17, 203, 0.4);
+}
+
+.btn-primary:hover::before {
+  left: 100%;
+}
+
+.btn-secondary {
+  color: #6A11CB;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(106, 17, 203, 0.3);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.btn-secondary:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.btn-secondary:hover::before {
+  left: 100%;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 0;
+  color: var(--text-secondary);
+}
+
+.empty-state i {
+  font-size: 48px;
+  margin-bottom: 15px;
+  opacity: 0.5;
+}
+
+.empty-state-text {
+  font-size: 16px;
+  text-align: center;
+  max-width: 400px;
+  line-height: 1.5;
+}
+
+.progress-bar-container {
+  width: 100%;
+  height: 6px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 5px;
+}
+
+.progress-bar {
+  height: 100%;
+  background: var(--primary-gradient);
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip .tooltip-text {
+  visibility: hidden;
+  width: 200px;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 8px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  font-size: 0.8rem;
+  font-weight: normal;
+}
+
+.tooltip .tooltip-text::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: rgba(0, 0, 0, 0.8) transparent transparent transparent;
+}
+
+.tooltip:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
+.content-type-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.content-type-option {
+  flex: 1;
+  min-width: 120px;
+  padding: 15px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--border-color);
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.content-type-option:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.content-type-option.selected {
+  background: rgba(106, 17, 203, 0.08);
+  border-color: var(--accent-color);
+}
+
+.content-type-icon {
+  font-size: 1.8rem;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  margin-bottom: 8px;
+}
+
+.content-type-icon.text {
+  color: #3182CE;
+  background: rgba(66, 153, 225, 0.1);
+}
+
+.content-type-icon.pdf {
+  color: #D53F8C;
+  background: rgba(237, 100, 166, 0.1);
+}
+
+.content-type-icon.video {
+  color: #DD6B20;
+  background: rgba(237, 137, 54, 0.1);
+}
+
+.content-type-icon.test {
+  color: #38A169;
+  background: rgba(72, 187, 120, 0.1);
+}
+
+.content-type-icon.task {
+  color: #6A11CB;
+  background: rgba(106, 17, 203, 0.1);
+}
+
+.content-type-label {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 100;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+}
+
+.modal-content {
+  background: rgba(255, 255, 255, 0.95);
+  margin: 10% auto;
+  padding: 25px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  width: 80%;
+  max-width: 700px;
+  animation: modalFadeIn 0.3s;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.modal-title {
+  font-weight: 700;
+  font-size: 1.3rem;
+}
+
+.modal-close {
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: all 0.3s ease;
+}
+
+.modal-close:hover {
+  color: var(--text-color);
+  transform: rotate(90deg);
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid var(--border-color);
+}
+
+.image-preview {
+  margin-top: 10px;
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+}
+
+.image-preview img {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.image-preview-remove {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #E53E3E;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 992px) {
+  .content-editor {
+    flex-direction: column;
+  }
+
+  .lessons-sidebar {
+    width: 100%;
+    position: static;
+    margin-bottom: 20px;
+  }
+
+  .editor-panel {
+    width: 100%;
+  }
+
+  .video-preview iframe {
+    height: 250px;
+  }
+
+  .content-type-selector {
+    flex-direction: column;
+  }
+
+  .content-type-option {
+    flex-direction: row;
+    justify-content: flex-start;
+    text-align: left;
+  }
+
+  .content-type-icon {
+    margin-bottom: 0;
+  }
+}
+/* Эквивалент font-bold text-lg mb-2 */
+.topic-title {
+  font-weight: 700;        /* font-bold */
+  font-size: 1.125rem;     /* text-lg */
+  margin-bottom: 0.5rem;   /* mb-2 */
+}
+
+</style>
+</head>
+
+
+<body>
+  <!-- Фоновый узор -->
+  <div class="background-pattern"></div>
+
+  <!-- Хедер -->
+  <header class="header py-4 bg-white shadow-sm">
+    <div class="container mx-auto flex justify-between items-center">
+      <div class="header-logo">Multy</div>
+       <div style="color:#ff0000;">После сохранения курс и его содержание сможет изменить только модератор</div>
+    </div>
+  </header>
+
+  <div class="container mx-auto my-8 px-4">
+    <!-- Скрытый input для хранения ID текущего урока -->
+    <input type="hidden" id="currentLessonId" value="{{ lesson.id }}">
+
+    <div class="content-editor flex flex-wrap">
+      <!-- Левый сайдбар: список тем и уроков -->
+      <div class="lessons-sidebar w-full md:w-1/4 p-4">
+        <div class="sidebar-header mb-4">
+          <div class="sidebar-title text-lg font-semibold">Темы курса</div>
+        </div>
+        <div class="lesson-list" id="lessonList">
+          {% for topic in topics %}
+            <div class="topic-block mb-4">
+              <div class="topic-title font-bold text-lg mb-2">{{ topic.title }}</div>
+              {% for lesson_item in topic.lessons.all %}
+                <div class="lesson-item p-3 border rounded mb-2 cursor-pointer {% if lesson_item.id == lesson.id %}bg-blue-100{% endif %}"
+                     data-id="{{ lesson_item.id }}"
+                     data-title="{{ lesson_item.title }}"
+                     data-price="{{ lesson_item.price_in_tokens }}">
+                  <div class="lesson-number text-sm font-medium">Урок {{ forloop.counter }}</div>
+                  <div class="lesson-title font-semibold">{{ lesson_item.title }}</div>
+                  <div class="lesson-price text-xs text-gray-600">
+                    <i class="fas fa-coins" style="color: var(--token-bg);"></i>
+                    {{ lesson_item.price_in_tokens }} токенов
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Правая панель: редактор содержимого выбранного урока -->
+    <div class="editor-panel w-full md:w-3/4 p-4">
+  <div class="editor-header mb-4 flex flex-col md:flex-row justify-between items-center">
+    <div class="editor-title">
+      <span id="currentLessonTitle" class="text-2xl font-bold">{{ lesson.title }}</span>
+      <div class="editor-subtitle text-sm text-gray-600">
+        Тема: <span id="currentTopicTitle">{{ lesson.topic.title }}</span>
+      </div>
+    </div>
+    <div id="lessonProgress" style="display: none;">
+      <div class="flex justify-between text-xs text-gray-500">
+        <span>Прогресс заполнения</span>
+        <span id="progressPercent">0%</span>
+      </div>
+      <div class="progress-bar-container bg-gray-200 rounded h-2 mt-1">
+        <div class="progress-bar bg-blue-600 h-2 rounded" id="progressBar" style="width: 0%;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Область отображения содержимого урока -->
+  <div id="contentBlocks" class="content-blocks">
+    {% if contents %}
+      {% for content in contents %}
+        <div class="content-block border p-4 rounded mb-4" data-id="{{ content.id }}" data-type="{{ content.content_type }}">
+          {% if content.content_type == 'text' %}
+            <div class="block-header flex justify-between items-center mb-2">
+              <span class="block-type-badge bg-gray-200 px-2 py-1 rounded">Текст</span>
+              <span>Блок {{ forloop.counter }}</span>
+            </div>
+            <div class="block-content">
+              <h4 class="block-title-text font-semibold">{{ content.text|default:"Без заголовка" }}</h4>
+              <p class="block-content-text">{{ content.text|linebreaks }}</p>
+            </div>
+
+          {% elif content.content_type == 'pdf' %}
+            <div class="block-header flex justify-between items-center mb-2">
+              <span class="block-type-badge bg-gray-200 px-2 py-1 rounded">PDF</span>
+              <span>Блок {{ forloop.counter }}</span>
+            </div>
+            <div class="block-content">
+              <h4 class="block-title-text font-semibold">{{ content.pdf_title|default:"Без заголовка" }}</h4>
+              <!-- Здесь можно добавить предпросмотр PDF -->
+            </div>
+
+          {% elif content.content_type == 'video' %}
+            <div class="block-header flex justify-between items-center mb-2">
+              <span class="block-type-badge bg-gray-200 px-2 py-1 rounded">Видео</span>
+              <span>Блок {{ forloop.counter }}</span>
+            </div>
+            <div class="block-content">
+              <h4 class="block-title-text font-semibold">{{ content.video_title|default:"Без заголовка" }}</h4>
+              <div class="video-preview">
+                <iframe src="{{ content.video_url }}" title="{{ content.video_title }}" allowfullscreen></iframe>
+              </div>
+            </div>
+
+          {% elif content.content_type == 'quiz' %}
+            <div class="block-header flex justify-between items-center mb-2">
+              <span class="block-type-badge bg-green-200 px-2 py-1 rounded">Тест</span>
+              <span>Блок {{ forloop.counter }}</span>
+            </div>
+            <div class="block-content">
+              {% if content.quiz_title %}
+                <h4 class="block-title-text font-semibold">{{ content.quiz_title }}</h4>
+              {% endif %}
+              {% if content.quiz_question %}
+                <div class="test-question mb-4">{{ content.quiz_question }}</div>
+              {% endif %}
+              {% if content.quiz_options %}
+                <div class="test-options mb-4">
+                  {% for option in content.quiz_options %}
+                    <div class="test-option">
+                      <input type="radio" name="test_{{ content.id }}" id="test_{{ content.id }}_option_{{ forloop.counter0 }}" class="test-option-radio">
+                      <label for="test_{{ content.id }}_option_{{ forloop.counter0 }}" class="test-option-label">{{ option }}</label>
+                    </div>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            </div>
+
+          {% elif content.content_type == 'task' %}
+            <div class="block-header flex justify-between items-center mb-2">
+              <span class="block-type-badge bg-gray-200 px-2 py-1 rounded">Задача</span>
+              <span>Блок {{ forloop.counter }}</span>
+            </div>
+            <div class="block-content">
+              <h4 class="block-title-text font-semibold">{{ content.task_title|default:"Без заголовка" }}</h4>
+              <p class="block-content-text">{{ content.task_description }}</p>
+              <!-- Отобразите условие задачи, изображение и подсказку по необходимости -->
+            </div>
+
+          {% else %}
+            <div class="p-3 bg-red-50 rounded">Тип содержимого не поддерживается.</div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="empty-state text-center py-10" id="emptyState">
+        <i class="fas fa-file-alt text-4xl text-gray-400"></i>
+        <div class="mt-4 text-lg text-gray-500">
+          Для этого урока пока нет содержимого. Добавьте блоки, нажав на кнопку ниже.
+        </div>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Кнопка для добавления нового блока содержимого -->
+  <div class="add-block-container text-center mt-6" id="addBlockContainer">
+    <button type="button" class="add-block-btn bg-blue-600 text-white py-2 px-4 rounded" id="addBlockBtn">
+      <i class="fas fa-plus-circle mr-2"></i> Добавить блок содержимого
+    </button>
+  </div>
+
+  <!-- Навигационные кнопки для переключения между уроками -->
+  <div class="btn-container flex justify-between mt-4" id="btnContainer">
+    <button type="button" class="btn btn-secondary" id="prevLessonBtn">Предыдущий урок</button>
+    <button type="button" class="btn btn-primary" id="nextLessonBtn">Сохранить и перейти к следующему уроку</button>
+  </div>
+</div>
+
+    </div>
+
+    <!-- Модальное окно для добавления блока содержимого -->
+    <div class="modal" id="addBlockModal" style="display: none;">
+      <div class="modal-content p-6 rounded bg-white">
+        <div class="modal-header flex justify-between items-center mb-4">
+          <h3 class="modal-title text-xl font-bold">Добавить блок содержимого</h3>
+          <span class="modal-close cursor-pointer text-2xl" id="closeModal">&times;</span>
+        </div>
+        <div class="modal-body">
+          <div class="content-type-selector grid grid-cols-2 gap-4 mb-4" id="contentTypeSelector">
+            <div class="content-type-option border p-4 text-center cursor-pointer" data-type="text">
+              <i class="fas fa-align-left text-2xl mb-2"></i>
+              <div>Текст</div>
+            </div>
+            <div class="content-type-option border p-4 text-center cursor-pointer" data-type="pdf">
+              <i class="fas fa-file-pdf text-2xl mb-2"></i>
+              <div>PDF</div>
+            </div>
+            <div class="content-type-option border p-4 text-center cursor-pointer" data-type="video">
+              <i class="fas fa-video text-2xl mb-2"></i>
+              <div>Видео</div>
+            </div>
+            <div class="content-type-option border p-4 text-center cursor-pointer" data-type="test">
+              <i class="fas fa-tasks text-2xl mb-2"></i>
+              <div>Тест</div>
+            </div>
+            <div class="content-type-option border p-4 text-center cursor-pointer" data-type="task">
+              <i class="fas fa-pencil-alt text-2xl mb-2"></i>
+              <div>Задача</div>
+            </div>
+          </div>
+
+          <!-- Форма для текстового блока -->
+          <div id="textForm" class="content-form" style="display: none;">
+            <div class="form-group mb-4">
+              <label class="form-label" for="textTitle">Заголовок</label>
+              <input type="text" class="form-control" id="textTitle" placeholder="Введите заголовок блока">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="textContent">Содержимое</label>
+              <textarea class="form-control" id="textContent" placeholder="Введите текстовое содержимое..." wrap="soft"></textarea>
+
+            </div>
+          </div>
+
+          <!-- Форма для PDF блока -->
+          <div id="pdfForm" class="content-form" style="display: none;">
+            <div class="form-group mb-4">
+              <label class="form-label" for="pdfTitle">Заголовок</label>
+              <input type="text" class="form-control" id="pdfTitle" placeholder="Введите заголовок PDF документа">
+            </div>
+            <div class="form-group">
+              <label class="form-label">PDF файл</label>
+              <div class="file-upload-container border p-4 text-center cursor-pointer" id="pdfUpload">
+                <i class="fas fa-file-upload text-2xl"></i>
+                <div class="mt-2">Перетащите PDF файл сюда или нажмите для выбора</div>
+                <div class="file-upload-info text-xs mt-1">Максимальный размер: 10MB</div>
+              </div>
+              <div id="pdfPreview" class="file-preview mt-3" style="display: none;">
+                <div class="file-preview-icon">
+                  <i class="fas fa-file-pdf"></i>
+                </div>
+                <div class="file-preview-info">
+                  <div class="file-preview-name">document.pdf</div>
+                  <div class="file-preview-size">2.4 MB</div>
+                </div>
+                <div class="file-preview-remove">
+                  <i class="fas fa-times-circle"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Форма для видео блока -->
+          <div id="videoForm" class="content-form" style="display: none;">
+            <div class="form-group mb-4">
+              <label class="form-label" for="videoTitle">Заголовок</label>
+              <input type="text" class="form-control" id="videoTitle" placeholder="Введите заголовок видео">
+            </div>
+            <div class="form-group mb-4">
+              <label class="form-label" for="videoUrl">Ссылка на видео (YouTube, Vimeo)</label>
+              <input type="text" class="form-control" id="videoUrl" placeholder="https://www.youtube.com/watch?v=...">
+            </div>
+            <div class="form-group mb-4">
+              <label class="form-label" for="videoDescription">Описание (необязательно)</label>
+              <textarea class="form-control" id="videoDescription" placeholder="Введите описание видео..."></textarea>
+            </div>
+            <div id="videoPreview" class="video-preview" style="display: none;">
+              <iframe src="" title="Видео" allowfullscreen></iframe>
+            </div>
+          </div>
+
+          <!-- Форма для теста -->
+          <div id="testForm" class="content-form" style="display: none;">
+            <div class="form-group mb-4">
+              <label class="form-label" for="testTitle">Заголовок теста</label>
+              <input type="text" class="form-control" id="testTitle" placeholder="Введите заголовок теста">
+            </div>
+            <div class="form-group mb-4">
+              <label class="form-label" for="testQuestion">Вопрос</label>
+              <textarea class="form-control" id="testQuestion" placeholder="Введите вопрос..."></textarea>
+            </div>
+            <div class="form-group mb-4">
+              <label class="form-label">Варианты ответов</label>
+              <div class="test-options" id="testOptions">
+                <div class="test-option">
+                  <input type="radio" name="correctOption" class="test-option-radio" checked>
+                  <input type="text" class="form-control test-option-text" placeholder="Вариант ответа 1">
+                  <div class="test-option-remove"><i class="fas fa-times"></i></div>
+                </div>
+                <div class="test-option">
+                  <input type="radio" name="correctOption" class="test-option-radio">
+                  <input type="text" class="form-control test-option-text" placeholder="Вариант ответа 2">
+                  <div class="test-option-remove"><i class="fas fa-times"></i></div>
+                </div>
+              </div>
+              <div class="add-option-btn" id="addOptionBtn">
+                <i class="fas fa-plus"></i>
+                <span>Добавить вариант ответа</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="testExplanation">Объяснение правильного ответа (необязательно)</label>
+              <textarea class="form-control" id="testExplanation" placeholder="Введите объяснение..."></textarea>
+            </div>
+          </div>
+
+          <!-- Форма для задачи -->
+          <!-- Форма для задачи -->
+<div id="taskForm" class="content-form" style="display: none;">
+  <!-- Заголовок -->
+  <div class="form-group mb-4">
+    <label class="form-label" for="taskTitle">Заголовок задачи</label>
+    <input type="text" class="form-control" id="taskTitle" placeholder="Введите заголовок задачи">
+  </div>
+
+  <!-- Условие -->
+  <div class="form-group mb-4">
+    <label class="form-label" for="taskDescription">Условие задачи</label>
+    <textarea class="form-control" id="taskDescription" placeholder="Введите условие задачи..."></textarea>
+  </div>
+
+  <!-- Изображение -->
+  <div class="form-group mb-4">
+    <label class="form-label">Изображение к задаче (необязательно)</label>
+    <div class="file-upload-container border p-4 text-center cursor-pointer" id="taskImageUpload">
+      <i class="fas fa-image text-2xl"></i>
+      <div class="mt-2">Перетащите изображение сюда или нажмите для выбора</div>
+      <div class="file-upload-info text-xs mt-1">Поддерживаются форматы JPG, PNG. Макс. размер: 5MB</div>
+    </div>
+    <div id="taskImagePreview" class="image-preview mt-3" style="display: none;">
+      <img src="" alt="Превью изображения" id="taskImagePreviewImg">
+      <div class="image-preview-remove">
+        <i class="fas fa-times-circle"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- Описание изображения -->
+  <div class="form-group mb-4">
+    <label class="form-label" for="taskImageDescription">Описание изображения (необязательно)</label>
+    <textarea class="form-control" id="taskImageDescription" placeholder="Введите описание изображения..."></textarea>
+  </div>
+
+  <!-- Тип ответа -->
+  <div class="form-group mb-4">
+    <label class="form-label" for="taskAnswerType">Тип ответа</label>
+    <select class="form-control form-select" id="taskAnswerType">
+      <option value="text">Текстовый</option>
+      <option value="number">Числовой</option>
+    </select>
+  </div>
+
+  <!-- Автопроверка (для text/number/formula) -->
+  <div id="autoCheckFields">
+    <div class="form-group mb-4">
+      <label class="form-label" for="taskCorrectAnswer">Правильный ответ</label>
+      <input type="text" class="form-control" id="taskCorrectAnswer" placeholder="Введите правильный ответ">
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="taskHint">Подсказка (необязательно)</label>
+      <textarea class="form-control" id="taskHint" placeholder="Введите подсказку или решение..."></textarea>
+    </div>
+  </div>
+
+  <!-- Настройки открытого ответа -->
+  <!-- Настройки открытого ответа -->
+<div id="openSettings" style="display: none;">
+  <!-- Критерии оценки -->
+  <div class="form-group mb-4">
+    <label class="form-label" for="openCriteria">Критерии оценки</label>
+    <textarea
+      class="form-control"
+      id="openCriteria"
+      placeholder='[{"text":"Критерий 1","maxScore":2}, {"text":"Критерий 2","maxScore":3}]'
+      rows="4"
+    ></textarea>
+    <small class="text-muted">
+      Введите JSON‑массив: каждый объект — текст критерия и максимальный балл
+    </small>
+  </div>
+
+  <!-- Пример правильного ответа -->
+  <div class="form-group mb-4">
+    <label class="form-label" for="openExample">Пример правильного ответа</label>
+    <textarea
+      class="form-control"
+      id="openExample"
+      placeholder="Опишите эталонный ответ и разбейте по критериям…"
+      rows="4"
+    ></textarea>
+  </div>
+
+  <!-- Максимальное число попыток -->
+  <div class="form-group mb-4">
+    <label class="form-label" for="openMaxAttempts">Максимум попыток</label>
+    <input
+      type="number"
+      class="form-control"
+      id="openMaxAttempts"
+      min="1"
+      value="1"
+    >
+    <small class="text-muted">
+      Сколько раз студент может сдавать этот открытый ответ
+    </small>
+  </div>
+</div>
+
+</div>
+
+        </div>
+        <div class="modal-footer mt-4 flex justify-end space-x-3">
+          <button type="button" class="btn btn-secondary" id="cancelBlockBtn">Отмена</button>
+          <button type="button" class="btn btn-primary" id="saveBlockBtn">Добавить блок</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Скрипты для редактора содержимого урока -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // DOM-элементы
+  const lessonList = document.getElementById('lessonList');
+  const contentBlocks = document.getElementById('contentBlocks');
+  const emptyState = document.getElementById('emptyState');
+  const addBlockContainer = document.getElementById('addBlockContainer');
+  const addBlockBtn = document.getElementById('addBlockBtn');
+  const btnContainer = document.getElementById('btnContainer');
+  const currentLessonTitle = document.getElementById('currentLessonTitle');
+  const currentTopicTitle = document.getElementById('currentTopicTitle');
+  const prevLessonBtn = document.getElementById('prevLessonBtn');
+  const nextLessonBtn = document.getElementById('nextLessonBtn');
+
+  // Модальное окно и формы
+  const addBlockModal = document.getElementById('addBlockModal');
+  const closeModal = document.getElementById('closeModal');
+  const contentTypeSelector = document.getElementById('contentTypeSelector');
+  const contentTypeForms = document.querySelectorAll('.content-form');
+  const saveBlockBtn = document.getElementById('saveBlockBtn');
+  const cancelBlockBtn = document.getElementById('cancelBlockBtn');
+
+  // Элементы для тестовых вариантов (тест)
+  const addOptionBtn = document.getElementById('addOptionBtn');
+  const testOptions = document.getElementById('testOptions');
+
+  // Элементы для видео
+  const videoUrl = document.getElementById('videoUrl');
+  const videoPreview = document.getElementById('videoPreview');
+
+  // Скрытые input для загрузки файлов (PDF и изображения для задач)
+  const pdfFileInput = document.getElementById('pdfFileInput');
+  const taskImageInput = document.getElementById('taskImageInput');
+  const answerType = document.getElementById('taskAnswerType');
+  const correctAnswerGroup = document.querySelector('[for="taskCorrectAnswer"]').closest('.form-group');
+  const hintGroup          = document.querySelector('[for="taskHint"]').closest('.form-group');
+  const openSettings       = document.getElementById('openSettings');
+
+  answerType.addEventListener('change', () => {
+  if (answerType.value === 'open') {
+    // прячем автопроверку
+    correctAnswerGroup.style.display = 'none';
+    hintGroup.style.display          = 'none';
+    // показываем настройки открытого ответа
+    openSettings.style.display       = 'block';
+  } else {
+    // показываем автопроверку
+    correctAnswerGroup.style.display = '';
+    hintGroup.style.display          = '';
+    // прячем
+    openSettings.style.display       = 'none';
+  }
+});
+
+  // Инициализация данных курса через Django-шаблон
+  // Здесь используются новые поля для тестов (quiz) и задач (task)
+  let courseData = {
+  topics: [
+    {% for topic in topics %}
+    {
+      id: '{{ topic.id }}',
+      title: '{{ topic.title }}',
+      lessons: [
+        {% for lesson_item in topic.lessons.all %}
+        {
+          id: '{{ lesson_item.id }}',
+          title: '{{ lesson_item.title }}',
+          price_in_tokens: {{ lesson_item.price_in_tokens }},
+          content: [
+            {% for content in lesson_item.contents.all %}
+            {
+              id: '{{ content.id }}',
+              type: '{{ content.content_type }}',
+              data: {
+                {% if content.content_type == 'text' %}
+                  title: '{{ content.text|default:"" }}',
+                  text: '{{ content.text|default:"" }}'
+                {% elif content.content_type == 'pdf' %}
+                  title: '{{ content.pdf_title|default:"" }}',
+                  file: '{{ content.pdf_file.name|default:"" }}',
+                  filesize: 'Неизвестно'
+                {% elif content.content_type == 'video' %}
+                  title: '{{ content.video_title|default:"" }}',
+                  url: '{{ content.video_url|default:"" }}',
+                  description: '{{ content.video_description|default:"" }}'
+                {% elif content.content_type == 'test' or content.content_type == 'quiz' %}
+                  title: '{{ content.quiz_title|default:"" }}',
+                  question: '{{ content.quiz_question|default:"" }}',
+                  options: {{ content.quiz_options|default:"[]"|safe }},
+                  explanation: '{{ content.quiz_explanation|default:"" }}',
+                  correctAnswer: '{{ content.quiz_correct_answer|default:"" }}'
+                {% elif content.content_type == 'task' %}
+                  title:           '{{ content.task_title|escapejs }}',
+                  description:     '{{ content.task_description|escapejs }}',
+                  answerType:      '{{ content.task_answer_type|default:""|escapejs }}',
+                  correctAnswer:   '{{ content.task_correct_answer|default:""|escapejs }}',
+                  hint:            '{{ content.task_hint|default:""|escapejs }}',
+                  image:           '{% if content.task_image %}{{ content.task_image.name }}{% else %}""{% endif %}',
+                  imageDescription:'{{ content.task_image_description|default:""|escapejs }}',
+                  criteria:        {{ content.open_criteria|default:"[]"|safe }},
+                  example:         '{{ content.open_example|default:""|escapejs }}',
+                  maxAttempts:     {{ content.open_max_attempts|default:"1" }}
+                {% endif %}
+              }
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+          ]
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+      ]
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+  ]
+};
+
+  // Глобальные переменные для текущего урока и выбранного типа нового блока
+  let currentLesson = null;
+  let selectedContentType = null;
+
+  // Функция сохранения содержимого урока
+  function saveLessonContent(callback) {
+    const lessonId = document.getElementById('currentLessonId').value;
+    const payload = { lesson_id: lessonId, blocks: currentLesson.content || [] };
+    fetch(`/save_lesson_content/${lessonId}/`, {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": "{{ csrf_token }}"
+      },
+      body: JSON.stringify(payload)
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        if (callback) callback();
+      } else {
+        alert("Ошибка при сохранении содержимого: " + data.error);
+      }
+    })
+    .catch(error => {
+      console.error("Ошибка запроса:", error);
+      alert("Ошибка при выполнении запроса.");
+    });
+  }
+
+  // Отрисовка списка уроков в боковом меню
+  function renderLessonList() {
+    lessonList.innerHTML = '';
+    courseData.topics.forEach(topic => {
+      const topicDiv = document.createElement('div');
+      topicDiv.className = 'topic-block mb-4';
+      topicDiv.innerHTML = `<div class="topic-title font-bold text-lg mb-2">${topic.title}</div>`;
+      topic.lessons.forEach((lessonItem, index) => {
+        const lessonElement = document.createElement('div');
+        lessonElement.className = `lesson-item cursor-pointer p-3 border rounded mb-2 ${currentLesson && currentLesson.id === lessonItem.id ? 'bg-blue-100' : ''}`;
+        lessonElement.dataset.id = lessonItem.id;
+        lessonElement.innerHTML = `
+          <div class="lesson-number text-sm font-medium">Урок ${index + 1}</div>
+          <div class="lesson-title font-semibold">${lessonItem.title}</div>
+          <div class="lesson-price text-xs text-gray-600">
+            <i class="fas fa-coins" style="color: var(--token-bg);"></i>
+            ${lessonItem.price_in_tokens} токенов
+          </div>
+        `;
+        lessonElement.addEventListener('click', () => selectLesson(lessonItem));
+        topicDiv.appendChild(lessonElement);
+      });
+      lessonList.appendChild(topicDiv);
+    });
+  }
+
+  // Функция выбора урока
+  function selectLesson(lessonItem) {
+    if (currentLesson && currentLesson.id !== lessonItem.id) {
+      saveLessonContent();
+    }
+    currentLesson = lessonItem;
+    // Гарантируем, что id всегда число (или строка-число)
+    document.getElementById('currentLessonId').value = (typeof lessonItem.id === 'number' ? lessonItem.id : parseInt(lessonItem.id, 10) || '');
+    renderLessonList();
+    renderLessonContent();
+    currentLessonTitle.textContent = lessonItem.title;
+    courseData.topics.forEach(topic => {
+      if (topic.lessons.some(l => l.id === lessonItem.id)) {
+        currentTopicTitle.textContent = topic.title;
+      }
+    });
+    if (!currentLesson.content) {
+      currentLesson.content = [];
+    }
+  }
+
+  // Функция отрисовки содержимого урока
+  function renderLessonContent() {
+    contentBlocks.innerHTML = '';
+    if (!currentLesson.content || currentLesson.content.length === 0) {
+      const emptyBlock = document.createElement('div');
+      emptyBlock.className = 'empty-state text-center py-10';
+      emptyBlock.innerHTML = `
+        <i class="fas fa-file-alt text-4xl text-gray-400"></i>
+        <div class="mt-4 text-lg text-gray-500">
+          Для этого урока пока нет содержимого. Добавьте блоки, нажав на кнопку ниже.
+        </div>
+      `;
+      contentBlocks.appendChild(emptyBlock);
+      return;
+    }
+    currentLesson.content.forEach((block, index) => {
+      const blockElement = createBlockElement(block, index);
+      contentBlocks.appendChild(blockElement);
+    });
+  }
+
+  // Функция создания элемента блока для отображения на странице
+function createBlockElement(block, index) {
+  // Если вложенный объект data отсутствует, заполняем его из плоских полей
+  if (!block.data) {
+    block.data = {
+      title: block.title || "",
+      text: block.text || "",
+      file: block.file || "",
+      filesize: block.filesize || "",
+      url: block.video_url || block.url || "",
+      description: block.video_description || block.description || "",
+      question: block.quiz_question || "",
+      options: block.quiz_options || [],
+      explanation: block.quiz_explanation || "",
+      correctAnswer: block.quiz_correct_answer || "",
+      image: block.task_image || "",
+      imageDescription: block.task_image_description || "",
+      answerType: block.task_answer_type || "",
+      hint: block.task_hint || ""
+    };
+  }
+// всегда приводим criteria и example к дефолтным значениям
+block.data.criteria    = block.data.criteria    || [];
+block.data.example     = block.data.example     || '';
+block.data.maxAttempts = block.data.maxAttempts || 1;
+
+  const blockElement = document.createElement('div');
+  blockElement.className = 'content-block border p-4 rounded mb-4';
+  blockElement.dataset.id = block.id;
+  blockElement.dataset.type = block.type;
+
+  // Если тип равен 'quiz', будем его отображать как 'test'
+  let renderType = (block.type === 'quiz') ? 'test' : block.type;
+  let badgeClass = '';
+  let badgeText = '';
+  switch (renderType) {
+    case 'text':  badgeText = 'Текст';  badgeClass = 'text';  break;
+    case 'pdf':   badgeText = 'PDF';    badgeClass = 'pdf';   break;
+    case 'video': badgeText = 'Видео';  badgeClass = 'video'; break;
+    case 'test':  badgeText = 'Тест';   badgeClass = 'test';  break;
+    case 'task':  badgeText = 'Задача'; badgeClass = 'task';  break;
+    default:      badgeText = 'Неизвестно'; break;
+  }
+
+  // Создаем заголовок блока с кнопками управления
+  const blockHeader = document.createElement('div');
+  blockHeader.className = 'block-header flex justify-between items-center mb-3';
+  blockHeader.innerHTML = `
+    <div class="block-title">
+      <span class="block-type-badge ${badgeClass}">${badgeText}</span>
+      <span>Блок ${index + 1}</span>
+    </div>
+    <div class="block-actions">
+      <button type="button" class="block-action-btn move-up" title="Переместить вверх">
+        <i class="fas fa-arrow-up"></i>
+      </button>
+      <button type="button" class="block-action-btn move-down" title="Переместить вниз">
+        <i class="fas fa-arrow-down"></i>
+      </button>
+      <button type="button" class="block-action-btn edit" title="Редактировать">
+        <i class="fas fa-edit"></i>
+      </button>
+      <button type="button" class="block-action-btn preview" title="Предпросмотр">
+        <i class="fas fa-eye"></i>
+      </button>
+      <button type="button" class="block-action-btn delete" title="Удалить">
+        <i class="fas fa-trash-alt"></i>
+      </button>
+    </div>
+  `;
+  blockElement.appendChild(blockHeader);
+
+  // Создаем контейнер для содержимого блока
+  const blockContent = document.createElement('div');
+  blockContent.className = 'block-content';
+
+  // Отображаем содержимое в зависимости от типа блока
+  switch (renderType) {
+    case 'text':
+      blockContent.innerHTML = `
+        <h4 class="block-title-text font-semibold mb-3">${block.data.title || 'Без заголовка'}</h4>
+        <div class="block-content-text prose">${formatTextContent(block.data.text || '')}</div>
+      `;
+      break;
+    case 'pdf':
+      blockContent.innerHTML = `
+        <h4 class="block-title-text font-semibold mb-3">${block.data.title || 'Без заголовка'}</h4>
+        <div class="file-preview">
+          <i class="fas fa-file-pdf text-red-600 mr-2"></i>
+          <span>${block.data.file || 'Файл не найден'}</span>
+        </div>
+      `;
+      break;
+    case 'video':
+      let embedUrl = block.data.url || '';
+      if (embedUrl.includes('youtube.com/watch?v=')) {
+        const videoId = embedUrl.split('v=')[1].split('&')[0];
+        embedUrl = `https://www.youtube.com/embed/${videoId}`;
+      } else if (embedUrl.includes('youtu.be/')) {
+        const videoId = embedUrl.split('youtu.be/')[1].split('?')[0];
+        embedUrl = `https://www.youtube.com/embed/${videoId}`;
+      }
+      blockContent.innerHTML = `
+        <h4 class="block-title-text font-semibold mb-3">${block.data.title || 'Без заголовка'}</h4>
+        <iframe src="${embedUrl}" allowfullscreen></iframe>
+        <div class="video-description mt-3">${block.data.description || ''}</div>
+      `;
+      break;
+    case 'test':  // Обрабатываем как для теста и quiz
+      blockContent.innerHTML = `
+        <h4 class="block-title-text font-semibold mb-3">${block.data.title || 'Без заголовка'}</h4>
+        <div class="test-question mb-4">${block.data.question || ''}</div>
+        <div class="test-options mb-4"></div>
+        <div class="test-result" style="display: none;"></div>
+        <button class="btn btn-primary check-test-btn">Проверить</button>
+      `;
+      const testOptionsContainer = blockContent.querySelector('.test-options');
+      if (block.data.options && block.data.options.length) {
+        block.data.options.forEach((option, i) => {
+          const optionEl = document.createElement('div');
+          optionEl.className = 'test-option';
+          optionEl.innerHTML = `
+            <input type="radio" name="test_${block.id}" id="test_${block.id}_option_${i}" class="test-option-radio">
+            <label for="test_${block.id}_option_${i}" class="test-option-label">${option}</label>
+          `;
+          testOptionsContainer.appendChild(optionEl);
+        });
+      }
+      const checkTestBtn = blockContent.querySelector('.check-test-btn');
+      const testResultEl = blockContent.querySelector('.test-result');
+      checkTestBtn.addEventListener('click', () => {
+        const selected = blockContent.querySelector(`input[name="test_${block.id}"]:checked`);
+        if (!selected) {
+          alert('Пожалуйста, выберите вариант ответа');
+          return;
+        }
+        const selectedIndex = Array.from(blockContent.querySelectorAll(`input[name="test_${block.id}"]`)).indexOf(selected);
+        const isCorrect = block.data.options[selectedIndex] === block.data.correctAnswer;
+        testResultEl.className = 'test-result mt-4 p-3 rounded ' + (isCorrect ? 'correct' : 'incorrect');
+        testResultEl.innerHTML = isCorrect
+          ? '<i class="fas fa-check-circle mr-2"></i> Верно! ' + (block.data.explanation || '')
+          : '<i class="fas fa-times-circle mr-2"></i> Неверно. ' + (block.data.explanation || '');
+        testResultEl.style.display = 'block';
+      });
+      break;
+    case 'task':
+  // Шапка задачи
+  let imgSrc = block.data.image || '';
+  if (imgSrc && !imgSrc.startsWith('/') && !imgSrc.startsWith('http')) {
+    imgSrc = '/media/' + imgSrc;
+  }
+  blockContent.innerHTML = `
+    <h4 class="block-title-text font-semibold mb-3">${block.data.title || 'Без заголовка'}</h4>
+    <div class="task-description mb-4">${block.data.description || ''}</div>
+    ${imgSrc ? `
+      <div class="task-image-container mb-4">
+        <img src="${imgSrc}" alt="Изображение задачи" class="task-image rounded">
+        ${block.data.imageDescription ? `<div class="task-image-description mt-2 text-sm text-gray-600">${block.data.imageDescription}</div>` : ''}
+      </div>
+    ` : ''}
+  `;
+
+  if (block.data.answerType === 'open') {
+    // Открытый ответ
+    // 1) Поле для ввода ответа
+    const openAns = document.createElement('div');
+    openAns.className = 'mb-6';
+    openAns.innerHTML = `
+      <label class="form-label block mb-2">Ваш ответ</label>
+      <textarea class="form-control mb-4" rows="4" placeholder="Введите свой ответ..."></textarea>
+    `;
+    blockContent.appendChild(openAns);
+
+    // 2) Критерии оценки
+    const critContainer = document.createElement('div');
+    critContainer.className = 'task-open-criteria mb-6';
+    critContainer.innerHTML = '<h5 class="font-semibold mb-3">Критерии оценки</h5>';
+    (block.data.criteria || []).forEach((crit, i) => {
+      const critRow = document.createElement('div');
+      critRow.className = 'flex justify-between items-center mb-2';
+      critRow.innerHTML = `
+        <span>${crit.text} (max ${crit.maxScore})</span>
+        <select class="form-control form-select w-24" data-crit-index="${i}">
+          ${[...Array(crit.maxScore + 1).keys()].map(n => `<option value="${n}">${n}</option>`).join('')}
+        </select>
+      `;
+      critContainer.appendChild(critRow);
+    });
+    blockContent.appendChild(critContainer);
+
+    // 3) Пример и эталон
+    const exampleDiv = document.createElement('div');
+    exampleDiv.className = 'task-open-example mb-6 p-4 bg-gray-50 rounded';
+    exampleDiv.innerHTML = `
+      <h5 class="font-semibold mb-2">Пример правильного ответа</h5>
+      <div class="text-sm text-gray-700">${block.data.example || 'Пример не задан'}</div>
+    `;
+    blockContent.appendChild(exampleDiv);
+
+    // 4) Кнопка сохранения самопроверки
+    const saveBtn = document.createElement('button');
+    saveBtn.className = 'btn btn-primary';
+    saveBtn.textContent = 'Сохранить оценку';
+    saveBtn.addEventListener('click', () => {
+      const selects = critContainer.querySelectorAll('select');
+      const scores = Array.from(selects).map(sel => ({
+        criterion: +sel.dataset.critIndex,
+        score: +sel.value
+      }));
+      console.log('Сохранить баллы:', scores);
+      // TODO: отправить scores на сервер и сохранить прогресс
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Оценка сохранена';
+    });
+    blockContent.appendChild(saveBtn);
+
+  } else {
+    // Автопроверяемые типы: text, number, formula
+    blockContent.innerHTML += `
+      <div class="task-answer-container mb-4">
+        <label class="form-label">Ваш ответ (${getAnswerTypeLabel(block.data.answerType)})</label>
+        <div class="task-answer-input-group flex gap-2 mt-2">
+          <input type="${block.data.answerType === 'number' ? 'number' : 'text'}"
+                 class="form-control task-answer-input"
+                 placeholder="Введите ответ...">
+          <button class="btn btn-primary check-task-btn">Проверить</button>
+        </div>
+        <div class="task-answer-result mt-3" style="display: none;"></div>
+      </div>
+      <div class="task-hint-container" style="display: none;">
+        <div class="task-hint p-3 rounded bg-blue-50">
+          <h5 class="font-semibold mb-2">Подсказка:</h5>
+          <div>${block.data.hint || 'Подсказка не предоставлена'}</div>
+        </div>
+      </div>
+      <button class="btn btn-secondary show-hint-btn">
+        <i class="fas fa-lightbulb mr-1"></i> Показать подсказку
+      </button>
+    `;
+
+    const checkBtn = blockContent.querySelector('.check-task-btn');
+    const resultEl = blockContent.querySelector('.task-answer-result');
+    const hintBtn = blockContent.querySelector('.show-hint-btn');
+    const hintEl = blockContent.querySelector('.task-hint-container');
+
+    checkBtn.addEventListener('click', () => {
+      const val = blockContent.querySelector('.task-answer-input').value.trim();
+      if (!val) return alert('Пожалуйста, введите ответ');
+      let correct = false;
+      if (block.data.answerType === 'number') {
+        correct = parseFloat(val) === parseFloat(block.data.correctAnswer);
+      } else {
+        correct = val.toLowerCase() === block.data.correctAnswer.toLowerCase();
+      }
+      resultEl.className = 'task-answer-result p-3 rounded ' + (correct ? 'correct' : 'incorrect');
+      resultEl.innerHTML = correct
+        ? '<i class="fas fa-check-circle mr-2"></i> Правильно!'
+        : '<i class="fas fa-times-circle mr-2"></i> Неправильно.';
+      resultEl.style.display = 'block';
+    });
+
+    hintBtn.addEventListener('click', () => {
+      hintEl.style.display = hintEl.style.display === 'block' ? 'none' : 'block';
+      hintBtn.innerHTML = hintEl.style.display === 'block'
+        ? '<i class="fas fa-lightbulb mr-1"></i> Скрыть подсказку'
+        : '<i class="fas fa-lightbulb mr-1"></i> Показать подсказку';
+    });
+  }
+  break;
+
+    default:
+      blockContent.innerHTML = `<div class="p-3 bg-red-50 rounded">Тип содержимого не поддерживается.</div>`;
+      break;
+  }
+
+  blockElement.appendChild(blockContent);
+
+  // Привязываем обработчики для кнопок управления: перемещение, редактирование, предпросмотр, удаление
+  const moveUpBtn = blockElement.querySelector('.move-up');
+  const moveDownBtn = blockElement.querySelector('.move-down');
+  const editBtn = blockElement.querySelector('.edit');
+  const previewBtn = blockElement.querySelector('.preview');
+  const deleteBtn = blockElement.querySelector('.delete');
+
+  moveUpBtn.addEventListener('click', () => moveBlock(index, 'up'));
+  moveDownBtn.addEventListener('click', () => moveBlock(index, 'down'));
+  editBtn.addEventListener('click', () => editBlock(block, index));
+  previewBtn.addEventListener('click', () => togglePreviewMode(blockElement));
+  deleteBtn.addEventListener('click', () => deleteBlock(index));
+
+  if (index === 0) {
+    moveUpBtn.disabled = true;
+    moveUpBtn.style.opacity = 0.3;
+  }
+  if (index === currentLesson.content.length - 1) {
+    moveDownBtn.disabled = true;
+    moveDownBtn.style.opacity = 0.3;
+  }
+
+  return blockElement;
+}
+
+
+
+
+
+  function formatTextContent(text) {
+    return text.split('\n\n').map(paragraph =>
+      paragraph ? `<p>${paragraph.replace(/\n/g, '<br>')}</p>` : ''
+    ).join('');
+  }
+
+  function getAnswerTypeLabel(type) {
+    switch (type) {
+      case 'number': return 'числовой';
+      case 'formula': return 'формула';
+      default: return 'текстовый';
+    }
+  }
+
+  function togglePreviewMode(blockElement) {
+    const isPreview = blockElement.classList.toggle('preview-mode');
+    const blockActions = blockElement.querySelector('.block-actions');
+    const previewBtn = blockElement.querySelector('.preview');
+    if (isPreview) {
+      blockElement.classList.add('bg-white');
+      blockActions.querySelectorAll('button:not(.preview)').forEach(btn => {
+        btn.style.display = 'none';
+      });
+      previewBtn.innerHTML = '<i class="fas fa-edit"></i>';
+      previewBtn.title = 'Режим редактирования';
+    } else {
+      blockElement.classList.remove('bg-white');
+      blockActions.querySelectorAll('button').forEach(btn => {
+        btn.style.display = '';
+      });
+      previewBtn.innerHTML = '<i class="fas fa-eye"></i>';
+      previewBtn.title = 'Предпросмотр';
+    }
+  }
+
+  function moveBlock(index, direction) {
+    if (direction === 'up' && index > 0) {
+      const temp = currentLesson.content[index];
+      currentLesson.content[index] = currentLesson.content[index - 1];
+      currentLesson.content[index - 1] = temp;
+    } else if (direction === 'down' && index < currentLesson.content.length - 1) {
+      const temp = currentLesson.content[index];
+      currentLesson.content[index] = currentLesson.content[index + 1];
+      currentLesson.content[index + 1] = temp;
+    }
+    renderLessonContent();
+  }
+
+
+
+  function deleteBlock(index) {
+  if (confirm('Вы уверены, что хотите удалить этот блок?')) {
+    currentLesson.content.splice(index, 1);
+    renderLessonContent();
+
+    // Сохраняем изменения на сервере после удаления
+    saveLessonContent(function() {
+      console.log("Блок успешно удален и изменения сохранены на сервере");
+    });
+  }
+}
+
+function editBlock(block, index) {
+  // Открываем модальное окно с предзаполненными данными
+  addBlockModal.style.display = 'block';
+
+  // Выбираем тип содержимого
+  let contentType = block.type;
+  if (contentType === 'quiz') contentType = 'test'; // Преобразуем quiz в test для UI
+
+  const contentTypeOption = document.querySelector(`.content-type-option[data-type="${contentType}"]`);
+  if (contentTypeOption) {
+    document.querySelectorAll('.content-type-option').forEach(opt => opt.classList.remove('selected'));
+    contentTypeOption.classList.add('selected');
+    contentTypeForms.forEach(form => form.style.display = 'none');
+    selectedContentType = contentType;
+    document.getElementById(`${selectedContentType}Form`).style.display = 'block';
+  }
+
+  // Заполняем форму данными блока
+  switch (block.type) {
+    case 'text':
+      document.getElementById('textTitle').value = block.data.title || '';
+      document.getElementById('textContent').value = block.data.text || '';
+      break;
+    case 'pdf':
+      document.getElementById('pdfTitle').value = block.data.title || '';
+      if (block.data.file) {
+        document.getElementById('pdfPreview').style.display = 'flex';
+        document.querySelector('#pdfPreview .file-preview-name').textContent = block.data.file;
+        document.querySelector('#pdfPreview .file-preview-size').textContent = block.data.filesize || 'Неизвестно';
+      }
+      break;
+    case 'video':
+      document.getElementById('videoTitle').value = block.data.title || '';
+      document.getElementById('videoUrl').value = block.data.url || '';
+      document.getElementById('videoDescription').value = block.data.description || '';
+      if (block.data.url) {
+        updateVideoPreview();
+      }
+      break;
+    case 'test':
+    case 'quiz':
+      document.getElementById('testTitle').value = block.data.title || '';
+      document.getElementById('testQuestion').value = block.data.question || '';
+      document.getElementById('testExplanation').value = block.data.explanation || '';
+
+      // Очищаем существующие варианты
+      testOptions.innerHTML = '';
+
+      // Добавляем варианты из блока
+      if (block.data.options && block.data.options.length) {
+        block.data.options.forEach((option, i) => {
+          const isCorrect = option === block.data.correctAnswer;
+          const optionEl = document.createElement('div');
+          optionEl.className = 'test-option';
+          optionEl.innerHTML = `
+            <input type="radio" name="correctOption" class="test-option-radio" ${isCorrect ? 'checked' : ''}>
+            <input type="text" class="form-control test-option-text" value="${option}" placeholder="Вариант ответа ${i+1}">
+            <div class="test-option-remove"><i class="fas fa-times"></i></div>
+          `;
+          optionEl.querySelector('.test-option-remove').addEventListener('click', function() {
+            if (testOptions.children.length > 2) {
+              testOptions.removeChild(optionEl);
+            } else {
+              alert('Должно быть минимум два варианта ответа');
+            }
+          });
+          testOptions.appendChild(optionEl);
+        });
+      } else {
+        // Если вариантов нет, добавляем два пустых
+        for (let i = 0; i < 2; i++) {
+          const optionEl = document.createElement('div');
+          optionEl.className = 'test-option';
+          optionEl.innerHTML = `
+            <input type="radio" name="correctOption" class="test-option-radio" ${i === 0 ? 'checked' : ''}>
+            <input type="text" class="form-control test-option-text" placeholder="Вариант ответа ${i+1}">
+            <div class="test-option-remove"><i class="fas fa-times"></i></div>
+          `;
+          optionEl.querySelector('.test-option-remove').addEventListener('click', function() {
+            if (testOptions.children.length > 2) {
+              testOptions.removeChild(optionEl);
+            } else {
+              alert('Должно быть минимум два варианта ответа');
+            }
+          });
+          testOptions.appendChild(optionEl);
+        }
+      }
+      break;
+    case 'task':
+      document.getElementById('taskTitle').value = block.data.title || '';
+      document.getElementById('taskDescription').value = block.data.description || '';
+      document.getElementById('taskAnswerType').value = block.data.answerType || 'text';
+      document.getElementById('taskCorrectAnswer').value = block.data.correctAnswer || '';
+      document.getElementById('taskHint').value = block.data.hint || '';
+
+      if (block.data.image && document.getElementById('taskImagePreviewImg')) {
+        document.getElementById('taskImagePreviewImg').src = block.data.image;
+        document.getElementById('taskImagePreview').style.display = 'block';
+      }
+
+      if (document.getElementById('taskImageDescription')) {
+        document.getElementById('taskImageDescription').value = block.data.imageDescription || '';
+      }
+      break;
+  }
+
+  // Изменяем текст кнопки сохранения и сохраняем индекс редактируемого блока
+  saveBlockBtn.textContent = 'Сохранить изменения';
+  saveBlockBtn.dataset.editIndex = index;
+}
+
+
+
+  // Обработчики модального окна
+  addBlockBtn.addEventListener('click', function() {
+    addBlockModal.style.display = 'block';
+    resetModalForms();
+  });
+  closeModal.addEventListener('click', function() {
+    addBlockModal.style.display = 'none';
+  });
+  cancelBlockBtn.addEventListener('click', function() {
+    addBlockModal.style.display = 'none';
+  });
+  window.addEventListener('click', function(event) {
+    if (event.target === addBlockModal) {
+      addBlockModal.style.display = 'none';
+    }
+  });
+
+  // Обработчик выбора типа содержимого
+  contentTypeSelector.addEventListener('click', function(event) {
+    const option = event.target.closest('.content-type-option');
+    if (!option) return;
+    document.querySelectorAll('.content-type-option').forEach(opt => opt.classList.remove('selected'));
+    option.classList.add('selected');
+    contentTypeForms.forEach(form => form.style.display = 'none');
+    selectedContentType = option.dataset.type;
+    // Если тесты обрабатываются с типом "test", сервер преобразует его в "quiz"
+    document.getElementById(`${selectedContentType}Form`).style.display = 'block';
+    if (selectedContentType === 'video') {
+      videoUrl.addEventListener('input', updateVideoPreview);
+    }
+  });
+
+  function updateVideoPreview() {
+    const url = videoUrl.value.trim();
+    if (url) {
+      let videoId = '';
+      if (url.includes('youtube.com/watch?v=')) {
+        videoId = url.split('v=')[1].split('&')[0];
+      } else if (url.includes('youtu.be/')) {
+        videoId = url.split('youtu.be/')[1].split('?')[0];
+      }
+      if (videoId) {
+        const embedUrl = `https://www.youtube.com/embed/${videoId}`;
+        videoPreview.querySelector('iframe').src = embedUrl;
+        videoPreview.style.display = 'block';
+      }
+    } else {
+      videoPreview.style.display = 'none';
+    }
+  }
+
+  // Обработчик добавления вариантов для теста
+  addOptionBtn.addEventListener('click', function() {
+    const optionCount = testOptions.children.length + 1;
+    const newOption = document.createElement('div');
+    newOption.className = 'test-option';
+    newOption.innerHTML = `
+      <input type="radio" name="correctOption" class="test-option-radio">
+      <input type="text" class="form-control test-option-text" placeholder="Вариант ответа ${optionCount}">
+      <div class="test-option-remove"><i class="fas fa-times"></i></div>
+    `;
+    newOption.querySelector('.test-option-remove').addEventListener('click', function() {
+      if (testOptions.children.length > 2) {
+        testOptions.removeChild(newOption);
+      } else {
+        alert('Должно быть минимум два варианта ответа');
+      }
+    });
+    testOptions.appendChild(newOption);
+  });
+  document.querySelectorAll('.test-option-remove').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const option = this.closest('.test-option');
+      if (testOptions.children.length > 2) {
+        testOptions.removeChild(option);
+      } else {
+        alert('Должно быть минимум два варианта ответа');
+      }
+    });
+  });
+
+  // Сброс форм модального окна
+  function resetModalForms() {
+    selectedContentType = null;
+    document.querySelectorAll('.content-type-option').forEach(opt => opt.classList.remove('selected'));
+    contentTypeForms.forEach(form => form.style.display = 'none');
+    document.getElementById('textTitle').value = '';
+    document.getElementById('textContent').value = '';
+    document.getElementById('pdfTitle').value = '';
+    document.getElementById('pdfPreview').style.display = 'none';
+    document.getElementById('videoTitle').value = '';
+    document.getElementById('videoUrl').value = '';
+    document.getElementById('videoDescription').value = '';
+    document.getElementById('videoPreview').style.display = 'none';
+    document.getElementById('testTitle').value = '';
+    document.getElementById('testQuestion').value = '';
+    document.getElementById('testExplanation').value = '';
+    testOptions.innerHTML = `
+      <div class="test-option">
+        <input type="radio" name="correctOption" class="test-option-radio" checked>
+        <input type="text" class="form-control test-option-text" placeholder="Вариант ответа 1">
+        <div class="test-option-remove"><i class="fas fa-times"></i></div>
+      </div>
+      <div class="test-option">
+        <input type="radio" name="correctOption" class="test-option-radio">
+        <input type="text" class="form-control test-option-text" placeholder="Вариант ответа 2">
+        <div class="test-option-remove"><i class="fas fa-times"></i></div>
+      </div>
+    `;
+    document.querySelectorAll('.test-option-remove').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const option = this.closest('.test-option');
+        if (testOptions.children.length > 2) {
+          testOptions.removeChild(option);
+        } else {
+          alert('Должно быть минимум два варианта ответа');
+        }
+      });
+    });
+    document.getElementById('taskTitle').value = '';
+    document.getElementById('taskDescription').value = '';
+    document.getElementById('taskAnswerType').value = 'text';
+    document.getElementById('taskCorrectAnswer').value = '';
+    document.getElementById('taskHint').value = '';
+    if (document.getElementById('taskImageDescription')) {
+      document.getElementById('taskImageDescription').value = '';
+    }
+    if (document.getElementById('taskImagePreview')) {
+      document.getElementById('taskImagePreview').style.display = 'none';
+    }
+    if (document.getElementById('taskImagePreviewImg')) {
+      document.getElementById('taskImagePreviewImg').src = '';
+    }
+  }
+
+  // Обработчики загрузки файлов и drag & drop для PDF
+  pdfFileInput.addEventListener('change', function() {
+    if (this.files && this.files[0]) {
+      uploadPdfFile(this.files[0]);
+    }
+  });
+  pdfFileInput.addEventListener('dragover', function(e) {
+    e.preventDefault();
+  });
+  document.getElementById('pdfUpload').addEventListener('click', function() {
+    pdfFileInput.click();
+  });
+  const pdfUploadContainer = document.getElementById('pdfUpload');
+  pdfUploadContainer.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    pdfUploadContainer.classList.add('dragover');
+  });
+  pdfUploadContainer.addEventListener('dragleave', function(e) {
+    e.preventDefault();
+    pdfUploadContainer.classList.remove('dragover');
+  });
+  pdfUploadContainer.addEventListener('drop', function(e) {
+    e.preventDefault();
+    pdfUploadContainer.classList.remove('dragover');
+    if (e.dataTransfer.files.length) {
+      uploadPdfFile(e.dataTransfer.files[0]);
+    }
+  });
+
+  // Обработчики загрузки файлов и drag & drop для изображения задачи
+  taskImageInput.addEventListener('change', function() {
+    if (this.files && this.files[0]) {
+      uploadTaskImage(this.files[0]);
+    }
+  });
+  document.getElementById('taskImageUpload').addEventListener('click', function() {
+    taskImageInput.click();
+  });
+  const taskImageUploadContainer = document.getElementById('taskImageUpload');
+  taskImageUploadContainer.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    taskImageUploadContainer.classList.add('dragover');
+  });
+  taskImageUploadContainer.addEventListener('dragleave', function(e) {
+    e.preventDefault();
+    taskImageUploadContainer.classList.remove('dragover');
+  });
+  taskImageUploadContainer.addEventListener('drop', function(e) {
+    e.preventDefault();
+    taskImageUploadContainer.classList.remove('dragover');
+    if (e.dataTransfer.files.length) {
+      uploadTaskImage(e.dataTransfer.files[0]);
+    }
+  });
+
+  function uploadPdfFile(file) {
+    const formData = new FormData();
+    formData.append('pdf_file', file);
+    formData.append('lesson_id', document.getElementById('currentLessonId').value);
+    fetch('/upload_pdf/', {
+      method: 'POST',
+      headers: {
+        "X-CSRFToken": "{{ csrf_token }}"
+      },
+      body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        const pdfPreview = document.getElementById('pdfPreview');
+        pdfPreview.querySelector('.file-preview-name').textContent = data.file_name;
+        pdfPreview.querySelector('.file-preview-size').textContent = data.file_size;
+        pdfPreview.style.display = 'flex';
+      } else {
+        alert("Ошибка при загрузке PDF: " + data.error);
+      }
+    })
+    .catch(error => {
+      console.error("Ошибка запроса:", error);
+      alert("Ошибка при выполнении запроса.");
+    });
+  }
+
+  function uploadTaskImage(file) {
+    const formData = new FormData();
+    formData.append('image_file', file);
+    formData.append('lesson_id', document.getElementById('currentLessonId').value);
+    fetch('/upload_task_image/', {
+      method: 'POST',
+      headers: {
+        "X-CSRFToken": "{{ csrf_token }}"
+      },
+      body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        const taskImagePreview = document.getElementById('taskImagePreview');
+        const taskImagePreviewImg = document.getElementById('taskImagePreviewImg');
+        taskImagePreviewImg.src = data.file_url;
+        taskImagePreview.style.display = 'block';
+        // Сохраняем url в data-атрибуте для последующего использования при сохранении блока
+        taskImagePreviewImg.setAttribute('data-uploaded-url', data.file_url);
+      } else {
+        alert("Ошибка при загрузке изображения: " + data.error);
+      }
+    })
+    .catch(error => {
+      console.error("Ошибка запроса:", error);
+      alert("Ошибка при выполнении запроса.");
+    });
+  }
+
+  // Обработчик добавления нового блока содержимого
+  saveBlockBtn.addEventListener('click', function() {
+    if (!selectedContentType) {
+      alert("Пожалуйста, выберите тип содержимого.");
+      return;
+    }
+    let newBlock = {};
+    if (selectedContentType === 'text') {
+      const textTitle = document.getElementById('textTitle').value.trim();
+      const textContent = document.getElementById('textContent').value.trim();
+      if (!textContent) {
+        alert("Необходимо заполнить текстовое содержимое.");
+        return;
+      }
+      newBlock = {
+        id: 'new_' + Date.now(),
+        type: 'text',
+        data: { title: textTitle, text: textContent }
+      };
+    } else if (selectedContentType === 'pdf') {
+      const pdfTitle = document.getElementById('pdfTitle').value.trim();
+      let pdfFile = "";
+      if (document.getElementById('pdfPreview').style.display !== 'none') {
+        pdfFile = document.querySelector('#pdfPreview .file-preview-name')
+                  ? document.querySelector('#pdfPreview .file-preview-name').textContent
+                  : "";
+      }
+      if (!pdfFile) {
+        alert("Пожалуйста, загрузите PDF файл.");
+        return;
+      }
+      newBlock = {
+        id: 'new_' + Date.now(),
+        type: 'pdf',
+        data: { title: pdfTitle, file: pdfFile }
+      };
+    } else if (selectedContentType === 'video') {
+      const videoTitle = document.getElementById('videoTitle').value.trim();
+      const videoUrlVal = document.getElementById('videoUrl').value.trim();
+      const videoDescription = document.getElementById('videoDescription').value.trim();
+      if (!videoUrlVal) {
+        alert("Пожалуйста, введите ссылку на видео.");
+        return;
+      }
+      newBlock = {
+        id: 'new_' + Date.now(),
+        type: 'video',
+        data: { title: videoTitle, url: videoUrlVal, description: videoDescription }
+      };
+    } else if (selectedContentType === 'test') {
+      // Для теста собираем данные из формы
+      const testTitle = document.getElementById('testTitle').value.trim();
+      const testQuestion = document.getElementById('testQuestion').value.trim();
+      const testExplanation = document.getElementById('testExplanation').value.trim();
+      let optionElements = document.querySelectorAll('#testOptions .test-option-text');
+      let options = [];
+      optionElements.forEach(function(el) {
+        let val = el.value.trim();
+        if (val) {
+          options.push(val);
+        }
+      });
+      if (!testQuestion || options.length < 2) {
+        alert("Пожалуйста, заполните вопрос и минимум два варианта ответа.");
+        return;
+      }
+      let correctOptionIndex = 0;
+      let radios = document.querySelectorAll('#testOptions .test-option-radio');
+      radios.forEach(function(radio, index) {
+        if (radio.checked) {
+          correctOptionIndex = index;
+        }
+      });
+      newBlock = {
+        id: 'new_' + Date.now(),
+        type: 'test',
+        data: {
+          title: testTitle,
+          question: testQuestion,
+          options: options,
+          correctAnswer: options[correctOptionIndex],
+          explanation: testExplanation
+        }
+      };
+    } else if (selectedContentType === 'task') {
+      const taskTitle       = document.getElementById('taskTitle').value.trim();
+      const taskDescription = document.getElementById('taskDescription').value.trim();
+      const taskAnswerType  = document.getElementById('taskAnswerType').value;
+      const taskCorrectAnswer = document.getElementById('taskCorrectAnswer').value.trim();
+      const taskHint = document.getElementById('taskHint').value.trim();
+      const taskImageDescription = document.getElementById('taskImageDescription').value.trim();
+      let taskImage = "";
+      const taskImagePreview = document.getElementById('taskImagePreview');
+      const taskImagePreviewImg = document.getElementById('taskImagePreviewImg');
+      if (taskImagePreview && taskImagePreview.style.display !== 'none' && taskImagePreviewImg) {
+        // Берём url из data-атрибута, если был загружен
+        taskImage = taskImagePreviewImg.getAttribute('data-uploaded-url') || taskImagePreviewImg.src || "";
+      }
+      if (!taskDescription) {
+        alert("Пожалуйста, заполните условие задачи.");
+        return;
+      }
+      // Открытый тип задачи
+      if (taskAnswerType === 'open') {
+        const rawCriteria = document.getElementById('openCriteria').value.trim() || '[]';
+        let criteria;
+        try {
+          criteria = JSON.parse(rawCriteria);
+        } catch (e) {
+          return alert('Неправильный формат критериев: должен быть JSONArray');
+        }
+        const example     = document.getElementById('openExample').value.trim();
+        const maxAttempts = parseInt(document.getElementById('openMaxAttempts').value, 10) || 1;
+        newBlock = {
+          id:   'new_' + Date.now(),
+          type: 'task',
+          data: {
+            title:       taskTitle,
+            description: taskDescription,
+            answerType:  'open',
+            criteria:    criteria,
+            example:     example,
+            maxAttempts: maxAttempts,
+            image:       taskImage,
+            imageDescription: taskImageDescription
+          }
+        };
+      } else {
+        newBlock = {
+          id: 'new_' + Date.now(),
+          type: 'task',
+          data: {
+            title: taskTitle,
+            description: taskDescription,
+            answerType: taskAnswerType,
+            correctAnswer: taskCorrectAnswer,
+            hint: taskHint,
+            image: taskImage,
+            imageDescription: taskImageDescription
+          }
+        };
+      }
+    }
+
+    if (!currentLesson.content) {
+      currentLesson.content = [];
+    }
+    currentLesson.content.push(newBlock);
+    renderLessonContent();
+    addBlockModal.style.display = 'none';
+    saveLessonContent(function() {
+      console.log("Новый блок успешно сохранен на сервере");
+    });
+  });
+
+  // Обработка переключения между уроками
+  prevLessonBtn.addEventListener('click', function() {
+    if (!currentLesson) return;
+    let flatLessons = [];
+    courseData.topics.forEach(topic => {
+      flatLessons = flatLessons.concat(topic.lessons);
+    });
+    const currentIndex = flatLessons.findIndex(lesson => lesson.id === currentLesson.id);
+    if (currentIndex > 0) {
+      saveLessonContent(() => { selectLesson(flatLessons[currentIndex - 1]); });
+    }
+  });
+  nextLessonBtn.addEventListener('click', function() {
+    if (!currentLesson) return;
+    let flatLessons = [];
+    courseData.topics.forEach(topic => {
+      flatLessons = flatLessons.concat(topic.lessons);
+    });
+    const currentIndex = flatLessons.findIndex(lesson => lesson.id === currentLesson.id);
+    if (currentIndex < flatLessons.length - 1) {
+      saveLessonContent(() => { selectLesson(flatLessons[currentIndex + 1]); });
+    }
+    const answerType = document.getElementById('taskAnswerType').value;
+
+
+    if (taskAnswerType === 'open') {
+    const rawCriteria = document.getElementById('openCriteria').value.trim() || '[]';
+    let criteria;
+    try {
+      criteria = JSON.parse(rawCriteria);
+    } catch (e) {
+      return alert('Неправильный формат критериев: должен быть JSONArray');
+    }
+    const example     = document.getElementById('openExample').value.trim();
+    const maxAttempts = parseInt(document.getElementById('openMaxAttempts').value, 10) || 1;
+
+    newBlock = {
+      id:   'new_' + Date.now(),
+      type: 'task',
+      data: {
+        title:       taskTitle,
+        description: taskDescription,
+        answerType:  'open',
+        criteria:    criteria,
+        example:     example,
+        maxAttempts: maxAttempts,
+        image:       taskImage,
+        imageDescription: taskImageDescription
+      }
+    };
+  }
+
+    else {
+      saveLessonContent(() => {
+        alert('Все уроки сохранены!');
+        window.location.href = "{% url 'login' %}"; // Редирект на страницу списка курсов
+      });
+    }
+  });
+
+  // Инициализация интерфейса
+  renderLessonList();
+  const initialLessonId = document.getElementById('currentLessonId').value;
+  let flatLessons = [];
+  courseData.topics.forEach(topic => {
+    flatLessons = flatLessons.concat(topic.lessons);
+  });
+  let initialLesson = flatLessons.find(lesson => lesson.id == initialLessonId);
+  if (initialLesson) {
+    selectLesson(initialLesson);
+  } else if (flatLessons.length > 0) {
+    selectLesson(flatLessons[0]);
+  }
+});
+
+
+</script>
+
+
+<!-- Скрытые элементы для загрузки файлов -->
+<input type="file" id="pdfFileInput" accept="application/pdf" style="display: none;">
+<input type="file" id="taskImageInput" accept="image/*" style="display: none;">
+
+    </div>
+    <script>
+        function saveContent(lessonId, contentType, contentData) {
+            const data = {
+                content_type: contentType,
+                ...contentData
+            };
+
+            fetch(`/accounts/save_lesson_content/${lessonId}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showSuccessMessage('Содержимое успешно сохранено');
+                    // Обновляем список контента
+                    loadLessonContent(lessonId);
+                } else {
+                    showErrorMessage(data.error || 'Ошибка при сохранении содержимого');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showErrorMessage('Произошла ошибка при отправке данных');
+            });
+        }
+
+        function showSuccessMessage(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast success';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        function showErrorMessage(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast error';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        function loadLessonContent(lessonId) {
+            fetch(`/accounts/lesson/${lessonId}/content/`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        updateContentList(data.content);
+                    } else {
+                        showErrorMessage(data.error || 'Ошибка при загрузке содержимого');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showErrorMessage('Произошла ошибка при загрузке данных');
+                });
+        }
+
+        function updateContentList(content) {
+            const contentList = document.getElementById('contentList');
+            contentList.innerHTML = '';
+
+            content.forEach(item => {
+                const contentItem = document.createElement('div');
+                contentItem.className = 'content-item';
+                contentItem.innerHTML = `
+                    <h3>${item.title || 'Без названия'}</h3>
+                    <p>Тип: ${getContentTypeName(item.content_type)}</p>
+                    <button onclick="editContent(${item.id})">Редактировать</button>
+                    <button onclick="deleteContent(${item.id})">Удалить</button>
+                `;
+                contentList.appendChild(contentItem);
+            });
+        }
+
+        function getContentTypeName(type) {
+            const types = {
+                'text': 'Текст',
+                'pdf': 'PDF документ',
+                'video': 'Видео',
+                'quiz': 'Тест',
+                'task': 'Задание',
+                'open': 'Открытый вопрос'
+            };
+            return types[type] || type;
+        }
+    </script>
+</body>
+</html>
